@@ -13,7 +13,7 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    { path: '/', redirect: { name: 'index' }},
+    { path: '/', redirect: { name: 'index' } },
     /* 首页相关 */
     { name: 'index', path: '/index', component: Index },
 
