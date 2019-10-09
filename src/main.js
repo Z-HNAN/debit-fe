@@ -33,7 +33,7 @@ Vue.component('head-menu', HeadMenu)
 /* 引入axios */
 Vue.prototype.$ajax = Axios // vue中使用
 
-Axios.defaults.baseURL = 'http://94.191.90.221:8000/eolinker_os/Mock/mock?projectID=1&uri='
+Axios.defaults.baseURL = 'http://94.191.90.221:8000/eolinker_os/Mock/simple?projectID=1&uri='
 // 设置axios的loading
 Axios.interceptors.request.use(function (config) {
   // 请求开始
