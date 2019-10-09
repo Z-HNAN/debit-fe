@@ -63,7 +63,6 @@ export default {
 
 <style>
   .tac {
-    border: 1px solid red;
     height: 100vh;
   }
 </style>
