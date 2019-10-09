@@ -1,0 +1,58 @@
+import Vue from 'vue'
+import App from './App'
+import router from './router'
+
+/* 引入vuex */
+import Store from './store/store'
+/* 引入axios */
+import Axios from 'axios'
+/* 引入nprogress */
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+/* ========= 引入全局组件 ======= */
+import NavMenu from './components/navMenu.vue'
+import HeadMenu from './components/headMenu.vue'
+/* ======= 引入全局组件 结束======= */
+
+/* ======= 引入 ElementUI ======= */
+
+/* 引入css */
+import 'element-ui/lib/theme-chalk/index.css'
+/* 引入组件 */
+import ElementUI from 'element-ui'
+
+Vue.use(ElementUI)
+/* ======= 结束 ElementUI ======= */
+
+/* ========= 使用全局组件 ======= */
+Vue.component('nav-menu', NavMenu)
+Vue.component('head-menu', HeadMenu)
+/* ======= 使用全局组件 结束======= */
+
+/* 使用vuex */
+Vue.prototype.$store = Store
+/* 引入axios */
+Vue.prototype.$ajax = Axios // vue中使用
+
+Axios.defaults.baseURL = 'http://94.191.90.221:8000/eolinker_os/Mock/mock?projectID=1&uri='
+// 设置axios的loading
+Axios.interceptors.request.use(function (config) {
+  // 请求开始
+  NProgress.start()
+  return config
+})
+Axios.interceptors.response.use(function (config) {
+  // 请求结束
+  NProgress.done()
+  return config
+})
+
+Vue.config.productionTip = false
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router,
+  render: h => h(App)
+})
