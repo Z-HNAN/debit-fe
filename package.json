@@ -1,7 +1,7 @@
 {
-  "name": "ygbadmin",
+  "name": "debit-fe",
   "version": "0.1.0",
-  "description": "hdu-ygb apply",
+  "description": "debit fe project",
   "author": "'Z-HNAN' <'zhn68033@163.com'>",
   "private": true,
   "scripts": {
