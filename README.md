@@ -2,6 +2,8 @@
 
 > debit fe project
 
+创新实践课前端项目
+
 ## Build Setup
 
 ``` bash

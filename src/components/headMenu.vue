@@ -2,13 +2,12 @@
   <div>
     <el-row :gutter="20">
       <el-col :span="10">
-        <h3 class="web-title">义务工作发展部</h3>
+        <h3 class="web-title">Web记账系统</h3>
       </el-col>
       <el-col :span="14">
         <div class="nav">
           <el-button icon="el-icon-s-operation" size="small"></el-button>
-          <h4 class="user-name">义工部</h4>
-          <span class="user-avatar-box"><img class="user-avatar" src="../../static/img/avatar.jpg" alt=""></span>
+          <h4 class="user-name">小明</h4>
         </div>
       </el-col>
     </el-row>

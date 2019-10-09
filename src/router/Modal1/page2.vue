@@ -1,8 +1,9 @@
 <template>
-  <div>设置</div>
+  <div>Page2</div>
 </template>
 
 <script>
+
 </script>
 
 <style>

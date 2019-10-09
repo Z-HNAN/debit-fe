@@ -3,7 +3,7 @@ import App from './App'
 import router from './router'
 
 /* 引入vuex */
-import Store from './store/store'
+/* import Store from './store/store' */
 /* 引入axios */
 import Axios from 'axios'
 /* 引入nprogress */
@@ -30,8 +30,6 @@ Vue.component('nav-menu', NavMenu)
 Vue.component('head-menu', HeadMenu)
 /* ======= 使用全局组件 结束======= */
 
-/* 使用vuex */
-Vue.prototype.$store = Store
 /* 引入axios */
 Vue.prototype.$ajax = Axios // vue中使用
 

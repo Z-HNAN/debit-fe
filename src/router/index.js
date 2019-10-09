@@ -1,37 +1,29 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Index from '@/components/index'
+import Index from './index.vue'
 
-import WorkNew from '@/components/work/new'
-import WorkList from '@/components/work/list'
-import WorkReport from '@/components/work/report'
-import WorkDetail from '@/components/work/detail'
+import Modal1Page1 from './modal1/page1'
+import Modal1Page2 from './modal1/page2'
 
-import ManageManagers from '@/components/manage/managers'
-import ManageEmployee from '@/components/manage/employee'
-import ManageDepartments from '@/components/manage/departments'
-import ManageSetting from '@/components/manage/setting'
+import Modal2Page1 from './modal2/page1'
+import Modal2Page2 from './modal2/page2'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
-    {path: '/', redirect: {name: 'index'}},
+    { path: '/', redirect: { name: 'index' }},
     /* 首页相关 */
-    {name: 'index', path: '/index', component: Index},
-    
-    /* 岗位相关 */
-    {name: 'work.new', path: '/work/new', component: WorkNew},
-    {name: 'work.list', path: '/work/list', component: WorkList},
-    {name: 'work.report', path: '/work/report', component: WorkReport},
-    {name: 'work.detail', path: '/work/detail/:work_id', component: WorkDetail},
-    
-    /* 管理相关 */
-    {name: 'manage.managers', path: '/manage/managers', component: ManageManagers},
-    {name: 'manage.employee', path: '/manage/employee', component: ManageEmployee},
-    {name: 'manage.departments', path: '/manage/departments', component: ManageDepartments},
-    {name: 'manage.setting', path: '/manage/setting', component: ManageSetting}
+    { name: 'index', path: '/index', component: Index },
+
+    /* modal1 */
+    { name: 'modal1.page1', path: '/modal1/page1', component: Modal1Page1 },
+    { name: 'modal1.page2', path: '/modal1/page2', component: Modal1Page2 },
+
+    /* modal2 */
+    { name: 'modal2.page1', path: '/modal2/page1', component: Modal2Page1 },
+    { name: 'modal2.page2', path: '/modal2/page2', component: Modal2Page2 }
 
   ]
 })

@@ -1,5 +1,5 @@
 <template>
-  <div>员工</div>
+  <div>index</div>
 </template>
 
 <script>

@@ -8,68 +8,41 @@
         @open="handleOpen"
         @close="handleClose"
       >
-      
+
         <el-menu-item index="/index">
           <i class="el-icon-s-home"></i>
-          <span slot="title">总览</span>
+          <span slot="title">总览1</span>
         </el-menu-item>
-        
-        <el-submenu index="1">
+        <el-menu-item index="/index">
+          <i class="el-icon-s-home"></i>
+          <span slot="title">总览2</span>
+        </el-menu-item>
+
+        <el-submenu index="modal1">
           <template slot="title">
             <i class="el-icon-s-order"></i>
-            <span>义务工作</span>
+            <span>modal1</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="/work/new">岗位发布</el-menu-item>
+            <el-menu-item index="/modal1/page1">page1</el-menu-item>
           </el-menu-item-group>
           <el-menu-item-group>
-            <el-menu-item index="/work/list">岗位查看</el-menu-item>
+            <el-menu-item index="/modal1/page2">page2</el-menu-item>
           </el-menu-item-group>
-          <el-menu-item-group>
-            <el-menu-item index="/work/report">导出报表</el-menu-item>
-          </el-menu-item-group>
-          <el-submenu index="1-4">
-            <template slot="title">
-              拓展功能
-            </template>
-            <el-menu-item index="1-4-1">拓展1</el-menu-item>
-            <el-menu-item index="1-4-1">拓展2</el-menu-item>
-          </el-submenu>
         </el-submenu>
-        
-        <el-submenu index="2">
+
+        <el-submenu index="modal2">
           <template slot="title">
-            <i class="el-icon-s-tools"></i>
-            <span>信息管理</span>
+            <i class="el-icon-s-order"></i>
+            <span>modal2</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="/manage/departments">用工部门</el-menu-item>
+            <el-menu-item index="/modal2/page1">page1</el-menu-item>
           </el-menu-item-group>
           <el-menu-item-group>
-            <el-menu-item index="/manage/managers">用工联系人</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group>
-            <el-menu-item index="/manage/employee">管理员设置</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group>
-            <el-menu-item index="/manage/setting">应用设置</el-menu-item>
+            <el-menu-item index="/modal2/page2">page2</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
-        <el-menu-item index="3">
-          <i class="el-icon-message-solid"></i>
-          <span slot="title">安全预警</span>
-        </el-menu-item>
-        
-        <el-menu-item index="4">
-          <i class="el-icon-s-custom"></i>
-          <span slot="title">义工库</span>
-        </el-menu-item>
-        
-        <el-menu-item index="5">
-          <i class="el-icon-menu"></i>
-          <span slot="title">拓展功能</span>
-        </el-menu-item>
-        
       </el-menu>
     </el-col>
   </el-row>
@@ -87,3 +60,10 @@ export default {
   }
 }
 </script>
+
+<style>
+  .tac {
+    border: 1px solid red;
+    height: 100vh;
+  }
+</style>
