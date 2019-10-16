@@ -45,7 +45,7 @@ Vue.prototype.$ajax = Axios // vue中使用
 /* 引入echarts */
 Vue.prototype.$echarts = echarts
 
-Axios.defaults.baseURL = 'http://94.191.90.221:8000/eolinker_os/Mock/simple?projectID=1&uri='
+Axios.defaults.baseURL = 'http://94.191.90.221:8100/mock/14'
 // 设置axios的loading
 Axios.interceptors.request.use(function (config) {
   // 请求开始
