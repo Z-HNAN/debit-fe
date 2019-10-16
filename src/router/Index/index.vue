@@ -1,35 +1,35 @@
 <template>
   <div class="main">
     <h1 style="display: inline-block;margin-right: 10px;">XXX账户</h1>
-    <template>
-      <el-select v-model="value" placeholder="请选择你的账户">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-    </template>
-    <el-row>
-      <el-col :span="8"><h3>在线天数</h3></el-col>
-       <el-col :span="8"><h3>预算额度</h3></el-col>
-        <el-col :span="8"><h3>账户余额</h3></el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="8">
-        <div class="box3">{{online}}天
-        </div>
-      </el-col>
-      <el-col :span="8">
-        <div class="box3">{{used}}/{{budget}}&nbsp;元
-        </div>
-      </el-col>
-      <el-col :span="8">
-        <div class="box3">{{rest}}&nbsp;元
-        </div>
-      </el-col>
-    </el-row>
+    <el-select v-model="value" placeholder="请选择你的账户">
+      <el-option
+        v-for="item in options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-select>
+    <div class="chartPreview">
+      <el-row>
+        <el-col :span="8"><h3>在线天数</h3></el-col>
+         <el-col :span="8"><h3>预算额度</h3></el-col>
+          <el-col :span="8"><h3>账户余额</h3></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="8">
+          <div class="box3">{{online}}天
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="box3">{{used}}/{{budget}}&nbsp;元
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="box3">{{rest}}&nbsp;元
+          </div>
+        </el-col>
+      </el-row>
+    </div>
     <el-row>
       <el-col :span="12">
         <div id="myChart1" :style="{width: '100%', height: '400px'}"></div>
@@ -88,12 +88,12 @@ export default {
           }
         },
         toolbox: {
-          feature: {
-            dataView: {show: true, readOnly: false},
-            magicType: {show: true, type: ['line', 'bar']},
-            restore: {show: true},
-            saveAsImage: {show: true}
-          }
+          // feature: {
+          //   dataView: {show: true, readOnly: false},
+          //   magicType: {show: true, type: ['line', 'bar']},
+          //   restore: {show: true},
+          //   saveAsImage: {show: true}
+          // }
         },
         legend: {
           data: ['消费金额', '剩余金额', '收入金额']
@@ -171,6 +171,9 @@ export default {
 *{
   font-family: "微软雅黑";
   font-weight: normal;
+}
+.chartPreview{
+  text-align: center;
 }
 .box3 {
   height: 200px;

@@ -49,7 +49,6 @@ export default {
 
 <style>
 .app-header-userinfo {
-  border: 1px solid red;
   position: absolute;
   top: 0;
   right: 0;
