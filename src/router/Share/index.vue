@@ -47,6 +47,16 @@ export default {
       console.log(`查看了账户 ${accountId}`)
     }
   },
+  mounted () {
+    this.$ajax.get(`users`, {
+      params: {
+        accountId: 1
+      }
+    }).then(res => {
+      this.person = res.data.filter(account => account.isShare === false)
+      this.shares = res.data.filter(account => account.isShare === true)
+    })
+  },
   components: {
     AccountCard
   }
