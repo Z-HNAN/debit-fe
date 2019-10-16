@@ -18,7 +18,7 @@
         </el-menu-item>
 
         <el-menu-item index="/share">
-          <i class="el-icon-search"></i>
+          <i class="el-icon-s-custom"></i>
           <span slot="title">账户显示</span>
         </el-menu-item>
 
