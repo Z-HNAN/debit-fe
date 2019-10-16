@@ -10,7 +10,7 @@
     <router-view/>
    </el-row>
 
-   <el-row class="row2"style="width: 80%;">
+   <el-row class="row2" style="width: 80%;">
      <div class="block">
          <el-pagination
            @size-change="handleSizeChange"
@@ -26,17 +26,17 @@
 </template>
 
 <script>
-  export default {
-    name:'allRecord',
-    methods: {
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-          },
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-      }
+export default {
+  name: 'allRecord',
+  methods: {
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
     },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
     }
+  }
+}
 </script>
 
 <style>

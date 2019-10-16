@@ -30,48 +30,48 @@
 </template>
 
 <script>
-  export default {
-    name:'monthRecord',
-     data() {
-          return {
-            tableData: [{
-              month: '2016-05',
-              sum: 2000
-            }, {
-              month: '2016-06',
-              sum: 2000
-            }, {
-              month: '2016-07',
-              sum: 2000
-            }, {
-              month: '2016-08',
-              sum: 2000
-            },
-            {
-              month: '2016-05',
-              sum: 2000
-            },
-            {
-              month: '2016-05',
-              sum: 2000
-            },
-            {
-              month: '2016-05',
-              sum: 2000
-            },
-            {
-              month: '2016-05',
-              sum: 2000
-            }],
-            search: ''
-          }
-        },
-        methods: {
-          handleDelete(index, row) {
-            console.log(index, row);
-          }
-        }
+export default {
+  name: 'monthRecord',
+  data () {
+    return {
+      tableData: [{
+        month: '2016-05',
+        sum: 2000
+      }, {
+        month: '2016-06',
+        sum: 2000
+      }, {
+        month: '2016-07',
+        sum: 2000
+      }, {
+        month: '2016-08',
+        sum: 2000
+      },
+      {
+        month: '2016-05',
+        sum: 2000
+      },
+      {
+        month: '2016-05',
+        sum: 2000
+      },
+      {
+        month: '2016-05',
+        sum: 2000
+      },
+      {
+        month: '2016-05',
+        sum: 2000
+      }],
+      search: ''
+    }
+  },
+  methods: {
+    handleDelete (index, row) {
+      console.log(index, row)
+    }
   }
+}
 </script>
 
 <style>

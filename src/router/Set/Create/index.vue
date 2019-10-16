@@ -14,12 +14,12 @@
       <el-form-item label="账户描述">
         <el-input type="textarea" v-model="form.desc"></el-input>
       </el-form-item>
-	  <el-form-item class="myRadio" label="是否共享">
-	    <el-radio-group v-model="form.isShare">
-	      <el-radio label="是"></el-radio>
-	      <el-radio label="否"></el-radio>
-	    </el-radio-group>
-	  </el-form-item>
+      <el-form-item class="myRadio" label="是否共享">
+        <el-radio-group v-model="form.isShare">
+          <el-radio label="是"></el-radio>
+          <el-radio label="否"></el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">立即创建</el-button>
         <el-button>取消</el-button>
@@ -29,24 +29,24 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        form: {
-          accountName: '',
-          accountId: '',
-          moneyAmount: '',
-          isShare: '',
-          desc: ''
-        }
-      }
-    },
-    methods: {
-      onSubmit() {
-        console.log('submit!');
+export default {
+  data () {
+    return {
+      form: {
+        accountName: '',
+        accountId: '',
+        moneyAmount: '',
+        isShare: '',
+        desc: ''
       }
     }
+  },
+  methods: {
+    onSubmit () {
+      console.log('submit!')
+    }
   }
+}
 </script>
 
 <style>

@@ -33,56 +33,56 @@
 </template>
 
 <script>
-  export default {
-    name:'dayRecord',
-     data() {
-          return {
-            tableData: [{
-              date: '2016-05-02',
-              sum: 100,
-              use:'搓了一顿'
-            }, {
-              date: '2016-05-04',
-              sum: 100,
-              use:'买了本书'
-            }, {
-              date: '2016-05-01',
-              sum: 100,
-              use:'淘宝购物'
-            }, {
-              date: '2016-05-03',
-              sum: 100,
-              use:'充一卡通'
-            },
-            {
-              date: '2016-05-03',
-              sum: 100,
-              use:'买点小零食'
-            },
-            {
-              date: '2016-05-03',
-              sum: 100,
-              use:'游乐场一游'
-            },
-            {
-              date: '2016-05-03',
-              sum: 100,
-              use:'买了???'
-            },
-            {
-              date: '2016-05-03',
-              sum: 100,
-              use:'买吃的，买喝的'
-            }],
-            search: ''
-          }
-        },
-        methods: {
-          handleDelete(index, row) {
-            console.log(index, row);
-          }
-        }
+export default {
+  name: 'dayRecord',
+  data () {
+    return {
+      tableData: [{
+        date: '2016-05-02',
+        sum: 100,
+        use: '搓了一顿'
+      }, {
+        date: '2016-05-04',
+        sum: 100,
+        use: '买了本书'
+      }, {
+        date: '2016-05-01',
+        sum: 100,
+        use: '淘宝购物'
+      }, {
+        date: '2016-05-03',
+        sum: 100,
+        use: '充一卡通'
+      },
+      {
+        date: '2016-05-03',
+        sum: 100,
+        use: '买点小零食'
+      },
+      {
+        date: '2016-05-03',
+        sum: 100,
+        use: '游乐场一游'
+      },
+      {
+        date: '2016-05-03',
+        sum: 100,
+        use: '买了???'
+      },
+      {
+        date: '2016-05-03',
+        sum: 100,
+        use: '买吃的，买喝的'
+      }],
+      search: ''
+    }
+  },
+  methods: {
+    handleDelete (index, row) {
+      console.log(index, row)
+    }
   }
+}
 </script>
 
 <style>
@@ -93,6 +93,5 @@
   .el-button{
     margin-right: 30px;
   }
-
 
 </style>

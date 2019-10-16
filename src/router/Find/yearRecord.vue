@@ -29,48 +29,48 @@
 </template>
 
 <script>
-  export default {
-    name:'yearRecord',
-     data() {
-          return {
-            tableData: [{
-              year: '2016',
-              sum: 20000
-            }, {
-              year: '2016',
-              sum: 20000
-            }, {
-              year: '2016',
-              sum: 20000
-            }, {
-              year: '2016',
-              sum: 20000
-            },
-            {
-              year: '2016',
-              sum: 20000
-            },
-            {
-              year: '2016',
-              sum: 20000
-            },
-            {
-              year: '2016',
-              sum: 20000
-            },
-            {
-              year: '2016',
-              sum: 20000
-            }],
-            search: ''
-          }
-        },
-        methods: {
-          handleDelete(index, row) {
-            console.log(index, row);
-          }
-        }
+export default {
+  name: 'yearRecord',
+  data () {
+    return {
+      tableData: [{
+        year: '2016',
+        sum: 20000
+      }, {
+        year: '2016',
+        sum: 20000
+      }, {
+        year: '2016',
+        sum: 20000
+      }, {
+        year: '2016',
+        sum: 20000
+      },
+      {
+        year: '2016',
+        sum: 20000
+      },
+      {
+        year: '2016',
+        sum: 20000
+      },
+      {
+        year: '2016',
+        sum: 20000
+      },
+      {
+        year: '2016',
+        sum: 20000
+      }],
+      search: ''
+    }
+  },
+  methods: {
+    handleDelete (index, row) {
+      console.log(index, row)
+    }
   }
+}
 </script>
 
 <style>

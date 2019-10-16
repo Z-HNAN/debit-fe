@@ -40,91 +40,101 @@ import SetCreate from './Set/Create/index.vue'
  */
 import SetAdd from './Set/Add/index.vue'
 
+/**
+ * 用户设置
+ */
+import User from './User/index.vue'
+
 Vue.use(Router)
 
 export default new Router({
   routes: [{
-      path: '/',
-      redirect: {
-        name: 'Index'
-      }
-    },
-
-    /* Index */
-    {
-      name: 'Index',
-      path: '/index',
-      component: Index
-    },
-
-    /* Find */
-    {
-      name: 'Find',
-      path: '/find',
-      component: Find,
-      redirect: '/find/day',
-      children: [{
-          path: '/find/day',
-          name: 'Find.Day',
-          component: FindDay
-        },
-        {
-          path: '/find/month',
-          name: 'Find.Month',
-          component: FindMonth
-        },
-        {
-          path: '/find/year',
-          name: 'Find.Year',
-          component: FindYear
-        }
-      ]
-    },
-
-
-    /* Share */
-    {
-      name: 'Share',
-      path: '/share',
-      component: Share
-    },
-
-    /* Statistics */
-    {
-      name: 'Statistics',
-      path: '/statistics',
-      component: Statistics,
-      redirect:'/statistic/month',
-      children:[
-        {
-
-          name: 'Statistic.Day',
-          path:'/statistic/day',
-          component: StatisticDay
-        },
-        {
-          name: 'Statistic.Month',
-          path:'/statistic/month',
-          component: StatisticMonth
-        },
-        {
-          name: 'Statistic.Year',
-          path:'/statistic/year',
-          component: StatisticYear
-        }
-      ]
-    },
-
-    /* Set */
-    {
-      name: 'Set.Create',
-      path: '/set/create',
-      component: SetCreate
-    },
-    {
-      name: 'Set.Add',
-      path: '/set/add',
-      component: SetAdd
+    path: '/',
+    redirect: {
+      name: 'Index'
     }
+  },
+
+  /* Index */
+  {
+    name: 'Index',
+    path: '/index',
+    component: Index
+  },
+
+  /* Find */
+  {
+    name: 'Find',
+    path: '/find',
+    component: Find,
+    redirect: '/find/day',
+    children: [{
+      path: '/find/day',
+      name: 'Find.Day',
+      component: FindDay
+    },
+    {
+      path: '/find/month',
+      name: 'Find.Month',
+      component: FindMonth
+    },
+    {
+      path: '/find/year',
+      name: 'Find.Year',
+      component: FindYear
+    }
+    ]
+  },
+
+  /* Share */
+  {
+    name: 'Share',
+    path: '/share',
+    component: Share
+  },
+
+  /* Statistics */
+  {
+    name: 'Statistics',
+    path: '/statistics',
+    component: Statistics,
+    redirect: '/statistic/month',
+    children: [{
+
+      name: 'Statistic.Day',
+      path: '/statistic/day',
+      component: StatisticDay
+    },
+    {
+      name: 'Statistic.Month',
+      path: '/statistic/month',
+      component: StatisticMonth
+    },
+    {
+      name: 'Statistic.Year',
+      path: '/statistic/year',
+      component: StatisticYear
+    }
+    ]
+  },
+
+  /* Set */
+  {
+    name: 'Set.Create',
+    path: '/set/create',
+    component: SetCreate
+  },
+  {
+    name: 'Set.Add',
+    path: '/set/add',
+    component: SetAdd
+  },
+
+  /* User */
+  {
+    name: 'User',
+    path: '/user',
+    component: User
+  }
   ]
 })

@@ -4,7 +4,7 @@
       <el-col :span="12">
         <div class="grid-content divLeft ">
            <h1>个人账户</h1>
-           <el-row v-for="item in person">
+           <el-row v-for="(item, index) in person" :key="index">
              <el-col :span="5">
                <div class="myIcon">
                  <span class="fa fa-user fa-5x fa-fw"></span>
@@ -21,7 +21,7 @@
       <el-col :span="12">
         <div class="grid-content ">
           <h1>共享账户</h1>
-          <el-row v-for="item in shares">
+          <el-row v-for="(item, index) in shares" :key="index">
             <el-col :span="5">
               <div class="myIcon myIcon2">
                 <span class="fa fa-4x fa-users fa-fw"></span>
@@ -40,24 +40,24 @@
 </template>
 
 <script>
-  export default {
-    data(){
-      return {
-        person:['我的账户1','我的账户2','我的账户3'],
-        shares:['家庭共享账户','寝室共享账户','公司共享账户']
-      }
-    },
-    methods: {
-      isDelete: function(){
-        this.$confirm('确认删除?', '提示', {})
-          .then(() => {
-            sessionStorage.setItem('user', this.ruleForm.username);
-            this.$router.push({path: '/'});
-          })
-          .catch(() => { });
-      }
+export default {
+  data () {
+    return {
+      person: ['我的账户1', '我的账户2', '我的账户3'],
+      shares: ['家庭共享账户', '寝室共享账户', '公司共享账户']
+    }
+  },
+  methods: {
+    isDelete: function () {
+      this.$confirm('确认删除?', '提示', {})
+        .then(() => {
+          sessionStorage.setItem('user', this.ruleForm.username)
+          this.$router.push({path: '/'})
+        })
+        .catch(() => { })
     }
   }
+}
 </script>
 
 <style scoped>

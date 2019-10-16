@@ -34,12 +34,12 @@
       <el-form-item label="消费描述">
         <el-input type="textarea" v-model="form.desc"></el-input>
       </el-form-item>
-	  <el-form-item class="myRadio" label="消费类型">
-	    <el-radio-group v-model="form.source">
-	      <el-radio label="支出"></el-radio>
-	      <el-radio label="收入"></el-radio>
-	    </el-radio-group>
-	  </el-form-item>
+    <el-form-item class="myRadio" label="消费类型">
+      <el-radio-group v-model="form.source">
+        <el-radio label="支出"></el-radio>
+        <el-radio label="收入"></el-radio>
+      </el-radio-group>
+    </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">立即创建</el-button>
         <el-button>取消</el-button>
@@ -49,26 +49,26 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        form: {
-          accountType: '',
-          money: '',
-          source: '',
-          desc: '',
-          type:'',
-          date:'',
-          time:''
-        }
-      }
-    },
-    methods: {
-      onSubmit() {
-        console.log('submit!');
+export default {
+  data () {
+    return {
+      form: {
+        accountType: '',
+        money: '',
+        source: '',
+        desc: '',
+        type: '',
+        date: '',
+        time: ''
       }
     }
+  },
+  methods: {
+    onSubmit () {
+      console.log('submit!')
+    }
   }
+}
 </script>
 
 <style>

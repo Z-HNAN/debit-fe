@@ -27,12 +27,10 @@ import HeadMenu from './components/headMenu.vue'
 import 'element-ui/lib/theme-chalk/index.css'
 /* 引入组件 */
 import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
 
 /* 引入自定义css文件 */
 import './assets/css/index.css'
 import './assets/css/button.css'
-
 
 Vue.use(ElementUI)
 /* ======= 结束 ElementUI ======= */
