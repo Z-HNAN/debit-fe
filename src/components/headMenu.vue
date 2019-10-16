@@ -1,9 +1,7 @@
 <template>
   <div>
     <!-- 我是样例菜单 -->
-    <el-menu default-active="1" class="el-menu-demo tab-page" mode="horizontal" @select="handleSelect"
-      active-text-color="#409EFF">
-      <el-menu-item index="1">当前信息</el-menu-item>
+    <el-menu default-active="/user" class="el-menu-demo tab-page" mode="horizontal" router>
       <el-menu-item index="/user">个人中心</el-menu-item>
     </el-menu>
 
@@ -14,9 +12,6 @@
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/userSet">
-            <el-dropdown-item>设置</el-dropdown-item>
-          </router-link>
           <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -29,7 +24,7 @@ export default {
   name: 'IndexContainer',
   data () {
     return {
-      username: ''
+      username: '游客'
     }
   },
   methods: {
@@ -52,12 +47,17 @@ export default {
 }
 </script>
 
-<style scoped>
-a {
-  text-decoration: none;
+<style>
+.app-header-userinfo {
+  border: 1px solid red;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 25px;
+  display: flex;
+  flex-flow: row nowrap;
+  height: 80px;
+  justify-content: flex-start;
+  align-items: center;
 }
-
-.router-link-active {
-    text-decoration: none;
-  }
 </style>
