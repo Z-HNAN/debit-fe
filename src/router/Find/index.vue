@@ -1,9 +1,9 @@
 <template>
  <div class="main">
    <el-row class="row1" style="width: 80%">
-     <router-link to="/account/day"><el-button type="primary">日账单</el-button></router-link>
-     <router-link to="/account/month"><el-button type="primary">月账单</el-button></router-link>
-     <router-link to="/account/year"><el-button type="primary">年账单</el-button></router-link>
+     <router-link :to="{ name: 'Find.Day' }"><el-button type="primary">日账单</el-button></router-link>
+     <router-link :to="{ name: 'Find.Month' }"><el-button type="primary">月账单</el-button></router-link>
+     <router-link :to="{ name: 'Find.Year' }"><el-button type="primary">年账单</el-button></router-link>
    </el-row>
 
    <el-row >

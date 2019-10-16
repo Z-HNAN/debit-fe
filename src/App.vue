@@ -1,11 +1,22 @@
+
+
 <template>
   <div id="app">
     <el-container>
-      <el-header><head-menu></head-menu></el-header>
+
+      <el-aside width="20%">
+        <nav-menu />
+      </el-aside>
+
       <el-container>
-        <el-aside width="20%"><nav-menu></nav-menu></el-aside>
-        <el-main><router-view></router-view></el-main>
+        <el-header>
+          <head-menu />
+        </el-header>
+        <el-main>
+          <router-view />
+        </el-main>
       </el-container>
+
     </el-container>
   </div>
 </template>
