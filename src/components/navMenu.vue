@@ -8,39 +8,36 @@
         @open="handleOpen"
         @close="handleClose"
       >
-
         <el-menu-item index="/index">
           <i class="el-icon-s-home"></i>
-          <span slot="title">总览1</span>
-        </el-menu-item>
-        <el-menu-item index="/index">
-          <i class="el-icon-s-home"></i>
-          <span slot="title">总览2</span>
+          <span slot="title">总览</span>
         </el-menu-item>
 
-        <el-submenu index="modal1">
-          <template slot="title">
-            <i class="el-icon-s-order"></i>
-            <span>modal1</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="/modal1/page1">page1</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group>
-            <el-menu-item index="/modal1/page2">page2</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
+        <el-menu-item index="/find">
+          <i class="el-icon-search"></i>
+          <span slot="title">个人账单</span>
+        </el-menu-item>
 
-        <el-submenu index="modal2">
+        <el-menu-item index="/share">
+          <i class="el-icon-search"></i>
+          <span slot="title">账户显示</span>
+        </el-menu-item>
+
+        <el-menu-item index="/statistics">
+          <i class="el-icon-s-data"></i>
+          <span slot="title">账户统计</span>
+        </el-menu-item>
+
+        <el-submenu index="set">
           <template slot="title">
-            <i class="el-icon-s-order"></i>
-            <span>modal2</span>
+            <i class="el-icon-setting"></i>
+            <span>账户设置</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="/modal2/page1">page1</el-menu-item>
+            <el-menu-item index="/set/create">创建账户</el-menu-item>
           </el-menu-item-group>
           <el-menu-item-group>
-            <el-menu-item index="/modal2/page2">page2</el-menu-item>
+            <el-menu-item index="/set/add">记一笔账</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
       </el-menu>
