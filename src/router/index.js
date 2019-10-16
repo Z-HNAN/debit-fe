@@ -1,29 +1,59 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Index from './index.vue'
+/**
+ * 总览
+ */
+import Index from './Index/index.vue'
 
-import Modal1Page1 from './modal1/page1'
-import Modal1Page2 from './modal1/page2'
+/**
+ * 个人账单
+ */
+import Find from './Find/index.vue'
 
-import Modal2Page1 from './modal2/page1'
-import Modal2Page2 from './modal2/page2'
+/**
+ * 账户显示
+ */
+import Share from './Share/index.vue'
+
+/**
+ * 账户统计
+ */
+import Statistics from './Statistics/index.vue'
+
+/**
+ * 账户设置
+ * Set
+ */
+/**
+ * 创建账户
+ */
+import SetCreate from './Set/Create/index.vue'
+/**
+ * 记一笔账
+ */
+import SetAdd from './Set/Add/index.vue'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     { path: '/', redirect: { name: 'index' } },
-    /* 首页相关 */
-    { name: 'index', path: '/index', component: Index },
 
-    /* modal1 */
-    { name: 'modal1.page1', path: '/modal1/page1', component: Modal1Page1 },
-    { name: 'modal1.page2', path: '/modal1/page2', component: Modal1Page2 },
+    /* Index */
+    { name: 'Index', path: '/index', component: Index },
 
-    /* modal2 */
-    { name: 'modal2.page1', path: '/modal2/page1', component: Modal2Page1 },
-    { name: 'modal2.page2', path: '/modal2/page2', component: Modal2Page2 }
+    /* Find */
+    { name: 'Find', path: '/find', component: Find },
 
+    /* Share */
+    { name: 'Share', path: '/share', component: Share },
+
+    /* Statistics */
+    { name: 'Statistics', path: '/statistics', component: Statistics },
+
+    /* Set */
+    { name: 'Set.Create', path: '/set/create', component: SetCreate },
+    { name: 'Set.Add', path: '/set/add', component: SetAdd }
   ]
 })
