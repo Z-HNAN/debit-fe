@@ -48,12 +48,12 @@ Vue.prototype.$echarts = echarts
 Axios.defaults.baseURL = 'http://94.191.90.221:8100/mock/14'
 // 设置axios的loading
 Axios.interceptors.request.use(function (config) {
-  // 请求开始
+// 请求开始
   NProgress.start()
   return config
 })
 Axios.interceptors.response.use(function (config) {
-  // 请求结束
+// 请求结束
   NProgress.done()
   return config
 })

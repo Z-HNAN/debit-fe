@@ -1,17 +1,17 @@
 <template>
   <div class="main">
     <h1 style="display: inline-block;margin-right: 10px;">XXX账户</h1>
-    <el-select v-model="value" placeholder="请选择你的账户">
+    <el-select v-model="value" @change="selAccount" placeholder="请选择你的账户">
       <el-option
         v-for="item in options"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value">
+        :key="item.id"
+        :label="item.name"
+        :value="item.id">
       </el-option>
     </el-select>
     <div class="chartPreview">
       <el-row>
-        <el-col :span="8"><h3>在线天数</h3></el-col>
+        <el-col :span="8"><h3>记账天数</h3></el-col>
          <el-col :span="8"><h3>预算额度</h3></el-col>
           <el-col :span="8"><h3>账户余额</h3></el-col>
       </el-row>
@@ -32,7 +32,7 @@
     </div>
     <el-row>
       <el-col :span="12">
-        <div id="myChart1" :style="{width: '100%', height: '400px'}"></div>
+        <div id="myChart1" :style="{width: '110%', height: '400px'}"></div>
       </el-col>
       <el-col :span="12">
         <div id="myChart2" :style="{width: '100%', height: '400px'}"></div>
@@ -46,34 +46,58 @@ export default {
   name: 'IndexContainer',
   data () {
     return {
-      online: 100,
+      online: null,
       used: 900,
       budget: 2500,
-      rest: 3000,
-      options: [{
-        value: '选项1',
-        label: '账号一'
-      }, {
-        value: '选项2',
-        label: '账户二'
-      }, {
-        value: '选项3',
-        label: '账户三'
-      }, {
-        value: '选项4',
-        label: '账户四'
-      }, {
-        value: '选项5',
-        label: '账户五'
-      }],
+      rest: null,
+      options: [],
+      billTypes: [],
       value: ''
     }
   },
+  created () {
+    this.getAccount()
+  },
   mounted () {
-    this.drawLine()
+    this.drawLine(this.value.id)
   },
   methods: {
-    drawLine () {
+    getAccount () { // 获取该用户所有的记账账本
+      this.$ajax.get('/users')
+        .then((response) => {
+          this.options = response.data
+          console.log(response.data)
+        }).catch((error) => {
+          console.log(error)
+        })
+    },
+    selAccount (selUserId) { // 用户选择账户
+      this.$ajax.get('/users/{' + selUserId + '}')
+        .then((response) => {
+          this.value = response.data
+          this.rest = this.value.moneyAmount // 账户余额
+          this.online = this.getDay(this.value.createDate) // 记账时间
+        }).catch((error) => {
+          console.log(error)
+        })
+    },
+    getBillType (accountId) { // 获取用户所有的记账类型
+      this.$ajax.get('/billTypes?account=' + accountId)
+        .then((response) => {
+          this.billTypes = response.data
+        }).catch((error) => {
+          console.log(error)
+        })
+    },
+    // getBill () { // 获取指定账户下的所有账单
+    //   this.$ajax.get('/bills')
+    //     .then((response) =>  {
+    //       this.bills =  response.data
+    //     }).catch((error) => {
+    //       console.log(error);
+    //     })
+    // },
+    drawLine (accountId) { // echart图表
       // 基于准备好的dom，初始化echarts实例
       let myChart1 = this.$echarts.init(document.getElementById('myChart1'))
       // 绘制图表
@@ -86,14 +110,6 @@ export default {
               color: '#999'
             }
           }
-        },
-        toolbox: {
-          // feature: {
-          //   dataView: {show: true, readOnly: false},
-          //   magicType: {show: true, type: ['line', 'bar']},
-          //   restore: {show: true},
-          //   saveAsImage: {show: true}
-          // }
         },
         legend: {
           data: ['消费金额', '剩余金额', '收入金额']
@@ -146,23 +162,32 @@ export default {
       })
 
       let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
-      myChart2.setOption({
-        series: [
-          {
-            name: '访问来源',
-            type: 'pie',
-            radius: '55%',
-            data: [
-              {value: 235, name: '交通出行'},
-              {value: 274, name: '服饰美容'},
-              {value: 310, name: '文体教育'},
-              {value: 335, name: '餐饮美食'},
-              {value: 800, name: '生活日用'},
-              {value: 1000, name: '住房物业'}
-            ]
-          }
-        ]
+      // 异步加载数据
+      this.$ajax.get('/billTypes?account=' + accountId).then((response) => {
+        myChart2.setOption({
+          series: [
+            {
+              name: '支出比重',
+              type: 'pie',
+              radius: '50%',
+              data: response.data.name
+              // [
+            
+              // {value: 274, name: '服饰美容'},
+              // {value: 310, name: '文体教育'},
+              // {value: 335, name: '餐饮美食'},
+              // {value: 800, name: '生活日用'},
+              // {value: 1000, name: '住房物业'}
+              // ]
+            }
+          ]
+        })
       })
+    },
+    getDay (startTime) { // 根据时间戳获取记账天数
+      var endTime = new Date().getTime()
+      var days = Math.floor((endTime - startTime) / 86400000)
+      return days
     }
   }
 }
