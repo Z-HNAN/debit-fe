@@ -61,6 +61,7 @@ export default {
         this.getMoneyAmount(res2.data)
       })
     })
+    this.drawLine()
   },
   methods: {
     getAccount () { // 获取该用户所有的记账账本
