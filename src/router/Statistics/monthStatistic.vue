@@ -72,7 +72,7 @@ export default {
     this.drawLine()
   },
   methods: {
-    drawLine () {
+    drawLine (userId) {
       // 绘制柱状图
       let myChart = this.$echarts.init(document.getElementById('myChart'))
       let option = {
@@ -144,51 +144,57 @@ export default {
 
       // 绘制饼图
       let myPieChart = this.$echarts.init(document.getElementById('myPieChart'))
-      let option2 = {
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
-        },
-        legend: {
-          orient: 'vertical',
-          x: 'left',
-          data: ['生活日用', '教育缴费', '娱乐消费', '交通出行', '物流业务']
-        },
-        series: [
-          {
-            name: '支出类型',
-            type: 'pie',
-            radius: ['50%', '70%'],
-            avoidLabelOverlap: false,
-            label: {
-              normal: {
-                show: false,
-                position: 'center'
-              },
-              emphasis: {
-                show: true,
-                textStyle: {
-                  fontSize: '30',
-                  fontWeight: 'bold'
+      // 异步加载数据
+      this.$ajax.get('/users/type/{' + userId + '}').then((response) => {
+        // 绘制图表
+        myPieChart.setOption({
+          tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b}: {c} ({d}%)'
+          },
+          legend: {
+            orient: 'vertical',
+            x: 'right',
+            data: (function () { // 获取用户账目
+              let name = []
+              for (let i = 0; i < response.data.length; i++) {
+                name.push(response.data[i].name)
+              }
+              return name
+            })()
+          },
+          series: [
+            {
+              name: '用户账目',
+              type: 'pie',
+              radius: ['50%', '70%'],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: false,
+                  position: 'center'
+                },
+                emphasis: {
+                  show: true,
+                  textStyle: {
+                    fontSize: '30',
+                    fontWeight: 'bold'
+                  }
                 }
-              }
-            },
-            labelLine: {
-              normal: {
-                show: false
-              }
-            },
-            data: [
-              {value: 335, name: '生活日用'},
-              {value: 310, name: '教育缴费'},
-              {value: 234, name: '娱乐消费'},
-              {value: 135, name: '交通出行'},
-              {value: 1548, name: '物流业务'}
-            ]
-          }
-        ]
-      }
-      myPieChart.setOption(option2)
+              },
+              data: (function () { // 饼图数据
+                let data = []
+                for (let i = 0; i < response.data.length; i++) {
+                  data.push({
+                    'value': response.data[i].amount,
+                    'name': response.data[i].name 
+                  })
+                }
+                return data
+              })()
+            }]
+        })
+      })
     }
   }
 }
