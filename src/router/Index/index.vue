@@ -1,19 +1,11 @@
 <template>
   <div class="main">
-    <h1 style="display: inline-block;margin-right: 10px;">XXX账户</h1>
-    <el-select v-model="value" placeholder="请选择你的账户">
-      <el-option
-        v-for="item in options"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value">
-      </el-option>
-    </el-select>
+    <AccountSelect @getAccount="selectAccount"/>
     <div class="chartPreview">
       <el-row>
         <el-col :span="8"><h3>在线天数</h3></el-col>
-         <el-col :span="8"><h3>预算额度</h3></el-col>
-          <el-col :span="8"><h3>账户余额</h3></el-col>
+         <el-col :span="8"><h3>使用金额</h3></el-col>
+          <el-col :span="8"><h3>预算金额</h3></el-col>
       </el-row>
       <el-row>
         <el-col :span="8">
@@ -21,11 +13,11 @@
           </div>
         </el-col>
         <el-col :span="8">
-          <div class="box3">{{used}}/{{budget}}&nbsp;元
+          <div class="box3">{{used}}/{{moneyAmount}}&nbsp;元
           </div>
         </el-col>
         <el-col :span="8">
-          <div class="box3">{{rest}}&nbsp;元
+          <div class="box3">{{budget}}&nbsp;元
           </div>
         </el-col>
       </el-row>
@@ -42,35 +34,31 @@
 
 </template>
 <script>
+import AccountSelect from '@/components/AccountSelect/index.vue'
 export default {
   name: 'IndexContainer',
   data () {
     return {
       online: 100,
       used: 900,
-      budget: 2500,
-      rest: 3000,
-      options: [{
-        value: '选项1',
-        label: '账号一'
-      }, {
-        value: '选项2',
-        label: '账户二'
-      }, {
-        value: '选项3',
-        label: '账户三'
-      }, {
-        value: '选项4',
-        label: '账户四'
-      }, {
-        value: '选项5',
-        label: '账户五'
-      }],
-      value: ''
+      budget: 3000,
+      moneyAmount: 5000
     }
+  },
+  components: {
+    AccountSelect
   },
   mounted () {
     this.drawLine()
+    // 默认显示第一个账户
+    this.$ajax.get('/users').then(res => {
+      this.$ajax.get('/users/' + res.data[0].id).then(res1 => {
+        this.budget = res1.data.moneyAmount
+      })
+      this.$ajax.get('/bills?userId=' + res.data[0].id).then(res2 => {
+        this.getMoneyAmount(res2.data)
+      })
+    })
   },
   methods: {
     drawLine () {
@@ -163,6 +151,42 @@ export default {
           }
         ]
       })
+    },
+    selectAccount (id) {
+      // 获取选中账本moneyAmount
+      this.$ajax.get('/users/' + id)
+        .then(res => {
+          // console.log(res.data)
+          this.budget = res.data.moneyAmount
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      // 获取指定账本下的所有账目明细
+      this.$ajax.get('/bills?userId=' + id)
+        .then(res => {
+          this.getMoneyAmount(res.data)
+        })
+    },
+    getMoneyAmount (bills) {
+      // 计算所有收入账目总额
+      let income = bills.filter(item => {
+        return item.isIncome === true
+      })
+      let allIncome = 0
+      for (let i = 0; i < income.length; i++) {
+        allIncome += income[i].amount
+      }
+      // 计算所有支出账目总额
+      let pay = bills.filter(item => {
+        return item.isIncome === false
+      })
+      let allPay = 0
+      for (let i = 0; i < pay.length; i++) {
+        allPay += pay[i].amount
+      }
+      // 计算账本总金额 = 所有收入 - 所有支出
+      this.moneyAmount = allIncome - allPay
     }
   }
 }

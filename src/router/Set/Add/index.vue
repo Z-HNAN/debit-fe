@@ -2,42 +2,62 @@
   <div class="main">
     <h1>记一笔帐</h1>
     <el-form ref="form" :model="form" label-width="80px">
-      <el-form-item label="记账类型">
-        <el-input v-model="form.accountType"></el-input>
+      <el-form-item label="添入账本">
+          <el-input v-model.number="form.userId" placeholder="请输入添入账本id"></el-input>
       </el-form-item>
+    <el-form-item label="用户id">
+        <el-input v-model.number="form.accountId" placeholder="请输入你的个人id"></el-input>
+    </el-form-item>
+    <el-form-item label="账目名称">
+        <el-input v-model="form.name" placeholder="请输添加账目名称"></el-input>
+    </el-form-item>
       <el-form-item label="记账类型" class="myRadio">
           <el-col :span="12">
             <el-select v-model="form.type" placeholder="记账类型">
-              <el-option label="生活日用"></el-option>
-              <el-option label="娱乐消费"></el-option>
-              <el-option label="网上购物"></el-option>
-              <el-option label="教育缴费"></el-option>
-              <el-option label="工资收入"></el-option>
+              <el-option
+                v-for="item in billTypes"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
             </el-select>
           </el-col>
           <el-col :span="12">
-            <el-input type="text" v-model="form.type" placeholder="自定义类型"></el-input>
+            <el-tooltip class="item" effect="dark" content="账户类型太少？创建一个？" placement="right">
+              <el-button @click="dialogFormVisible = true">添加记账类型</el-button>
+            </el-tooltip>
           </el-col>
       </el-form-item>
-      <el-form-item label="记账时间">
-            <el-col :span="11">
-              <el-date-picker type="date" placeholder="选择日期" v-model="form.date" style="width: 100%;"></el-date-picker>
-            </el-col>
-            <el-col class="line" :span="2">-</el-col>
-            <el-col :span="11">
-              <el-time-picker placeholder="选择时间" v-model="form.time" style="width: 100%;"></el-time-picker>
-            </el-col>
-      </el-form-item>
+      <el-dialog title="添加账户类型" :visible.sync="dialogFormVisible" width="500px">
+        <el-form :model="form2" style="width: 400px;">
+          <el-form-item label="用户id">
+            <el-input v-model.number="form2.accountId" autocomplete="off" placeholder="请输入用户id"></el-input>
+          </el-form-item>
+          <el-form-item label="账户类型">
+            <el-input v-model="form2.name" autocomplete="off" placeholder="请输入记账类型名称"></el-input>
+          </el-form-item>
+          <el-form-item class="myRadio" label="是否收入">
+            <el-radio-group v-model="form2.isIncome">
+              <el-radio label="false">支出</el-radio>
+              <el-radio label="true">收入</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="addBillType">确 定</el-button>
+        </div>
+      </el-dialog>
       <el-form-item label="金额大小">
-          <el-input v-model.number="form.money"></el-input>
+          <el-input v-model.number="form.amount"></el-input>
       </el-form-item>
-      <el-form-item label="消费描述">
-        <el-input type="textarea" v-model="form.desc"></el-input>
+      <el-form-item label="消费备注">
+        <el-input type="textarea" v-model="form.remark"></el-input>
       </el-form-item>
     <el-form-item class="myRadio" label="消费类型">
-      <el-radio-group v-model="form.source">
-        <el-radio label="支出"></el-radio>
-        <el-radio label="收入"></el-radio>
+      <el-radio-group v-model="form.isIncome">
+        <el-radio label="false">支出</el-radio>
+        <el-radio label="true">收入</el-radio>
       </el-radio-group>
     </el-form-item>
       <el-form-item>
@@ -52,26 +72,93 @@
 export default {
   data () {
     return {
+      billTypes: [],
       form: {
-        accountType: '',
-        money: '',
-        source: '',
-        desc: '',
+        userId: '',
+        amount: '',
         type: '',
+        isIncome: '',
         date: '',
-        time: ''
-      }
+        name: '',
+        remark: '',
+        accountId: ''
+      },
+      form2: {
+        accountId: '',
+        name: '',
+        isIncome: ''
+      },
+      dialogFormVisible: false,
+      formWidth: '120px'
     }
   },
   methods: {
     onSubmit () {
-      console.log('submit!')
+      // 添加创建账目时间
+      this.form.date = new Date().getTime()
+      // console.log(this.form)
+      this.$ajax.post('/bills', this.form)
+        .then(res => {
+          // console.log(res.data)
+          this.$alert('创建成功！！！', '提示', {
+            confirmButtonText: 'ok'
+          })
+          // 清空表单中输入的数据
+          this.form.userId = ''
+          this.form.amount = ''
+          this.form.type = ''
+          this.form.isIncome = ''
+          this.form.name = ''
+          this.form.remark = ''
+          this.form.accountId = ''
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    addBillType () {
+      this.dialogFormVisible = false
+      // console.log(this.form2)
+      this.$ajax.post('/billTypes', this.form2)
+        .then(res => {
+          // console.log(res.data)
+          this.$alert('创建成功！！！', '提示', {
+            confirmButtonText: 'ok'
+          })
+          this.form2.accountId = ''
+          this.form2.name = ''
+          this.form2.isIncome = ''
+        })
+        .catch(err => {
+          console.log(err)
+        })
+        .then(() => {
+          // 添加账户类型后再次请求billTypes刷新数据
+          this.$ajax.get('/billTypes')
+            .then(res => {
+              this.billTypes = res.data
+              // console.log(res.data)
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        })
     }
+  },
+  mounted () {
+    this.$ajax.get('/billTypes')
+      .then(res => {
+        this.billTypes = res.data
+        // console.log(res.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 }
 </script>
 
-<style>
+<style scoped>
   .el-form {
     width: 700px;
     border: 1px solid #eaeaea;

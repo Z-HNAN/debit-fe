@@ -13,7 +13,7 @@
         </el-menu-item>
 
         <el-menu-item index="/find">
-          <i class="el-icon-search"></i>
+          <i class="el-icon-search"></i> 
           <span slot="title">个人账单</span>
         </el-menu-item>
 

@@ -45,7 +45,8 @@ Vue.prototype.$ajax = Axios // vue中使用
 /* 引入echarts */
 Vue.prototype.$echarts = echarts
 
-Axios.defaults.baseURL = 'http://94.191.90.221:8100/mock/14'
+Axios.defaults.baseURL = 'http://94.191.90.221:50533/api'
+
 // 设置axios的loading
 Axios.interceptors.request.use(function (config) {
   // 请求开始
@@ -59,6 +60,20 @@ Axios.interceptors.response.use(function (config) {
 })
 
 Vue.config.productionTip = false
+
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') {
+    sessionStorage.removeItem('user')
+  }
+  var user = sessionStorage.getItem('user')
+  if (!user && to.path !== '/login') {
+    next({
+      path: '/login'
+    })
+  } else {
+    next()
+  }
+})
 
 /* eslint-disable no-new */
 new Vue({

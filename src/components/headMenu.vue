@@ -26,7 +26,7 @@ export default {
     return {
       username: '游客'
     }
-  },
+  }, 
   methods: {
     logout: function () {
       this.$confirm('确认退出?', '提示', {})
