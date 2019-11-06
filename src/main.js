@@ -47,6 +47,9 @@ Vue.prototype.$echarts = echarts
 
 Axios.defaults.baseURL = 'http://94.191.90.221:50533/api'
 
+/* Axios携带cookie */
+Axios.defaults.withCredentials = true
+
 // 设置axios的loading
 Axios.interceptors.request.use(function (config) {
 // 请求开始
