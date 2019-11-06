@@ -162,59 +162,7 @@ export default {
       })
 
       let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
-      myChart2.setOption({
-        series: [
-          {
-            name: '访问来源',
-            type: 'pie',
-            radius: '55%',
-            data: [
-              {value: 235, name: '交通出行'},
-              {value: 274, name: '服饰美容'},
-              {value: 310, name: '文体教育'},
-              {value: 335, name: '餐饮美食'},
-              {value: 800, name: '生活日用'},
-              {value: 1000, name: '住房物业'}
-            ]
-          }
-        ]
-      })
-    },
-    selectAccount (id) {
-      // 获取选中账本moneyAmount
-      this.$ajax.get('/users/' + id)
-        .then(res => {
-          // console.log(res.data)
-          this.budget = res.data.moneyAmount
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      // 获取指定账本下的所有账目明细
-      this.$ajax.get('/bills?userId=' + id)
-        .then(res => {
-          this.getMoneyAmount(res.data)
-        })
-    },
-    getMoneyAmount (bills) {
-      // 计算所有收入账目总额
-      let income = bills.filter(item => {
-        return item.isIncome === true
-      })
-      let allIncome = 0
-      for (let i = 0; i < income.length; i++) {
-        allIncome += income[i].amount
-      }
-      // 计算所有支出账目总额
-      let pay = bills.filter(item => {
-        return item.isIncome === false
-      })
-      let allPay = 0
-      for (let i = 0; i < pay.length; i++) {
-        allPay += pay[i].amount
-      }
-      // 计算账本总金额 = 所有收入 - 所有支出
-      this.moneyAmount = allIncome - allPay
+
       // 异步加载数据
       this.$ajax.get('/users/type/{' + userId + '}').then((response) => {
         // 绘制图表
@@ -273,6 +221,42 @@ export default {
           }]
         })
       })
+    },
+    selectAccount (id) {
+      // 获取选中账本moneyAmount
+      this.$ajax.get('/users/' + id)
+        .then(res => {
+          // console.log(res.data)
+          this.budget = res.data.moneyAmount
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      // 获取指定账本下的所有账目明细
+      this.$ajax.get('/bills?userId=' + id)
+        .then(res => {
+          this.getMoneyAmount(res.data)
+        })
+    },
+    getMoneyAmount (bills) {
+      // 计算所有收入账目总额
+      let income = bills.filter(item => {
+        return item.isIncome === true
+      })
+      let allIncome = 0
+      for (let i = 0; i < income.length; i++) {
+        allIncome += income[i].amount
+      }
+      // 计算所有支出账目总额
+      let pay = bills.filter(item => {
+        return item.isIncome === false
+      })
+      let allPay = 0
+      for (let i = 0; i < pay.length; i++) {
+        allPay += pay[i].amount
+      }
+      // 计算账本总金额 = 所有收入 - 所有支出
+      this.moneyAmount = allIncome - allPay
     }
   }
 }
