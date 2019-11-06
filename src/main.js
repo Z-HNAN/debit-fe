@@ -60,6 +60,9 @@ Axios.interceptors.response.use(function (config) {
 // 请求结束
   NProgress.done()
   return config
+}, function (err) {
+  NProgress.done()
+  return Promise.reject(err)
 })
 
 Vue.config.productionTip = false
