@@ -59,6 +59,10 @@ export default {
           this.logining = false
           // 将用户名保存在浏览器内存中
           sessionStorage.setItem('user', this.ruleForm.username)
+          /**
+           * 将用户名信息在浏览器内存中,以JSON串形式
+           */
+          sessionStorage.setItem('loginInfo', JSON.stringify(res.data || {}))
           this.$router.push({path: '/'})
         }).catch(err => {
           console.log(err)
