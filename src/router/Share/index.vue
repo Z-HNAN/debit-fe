@@ -4,15 +4,22 @@
       <el-col :span="12" class="list">
         <div>
           <h1>个人账户</h1>
-          <el-row v-for="item in person" :key="item.id">
-            <AccountCard :isShare='false' :account='item' @delete='handleDelete' @detail='handelDetail'/>
+          <el-row v-for="item in filterPerson" :key="item.id">
+            <AccountCard :isShare='false' :account='item'
+            @delete='handleDelete'
+            @detail='handelDetail'
+            @add='handleAdd'/>
           </el-row>
         </div>
       </el-col>
       <el-col :span="12" class="list">
         <h1>共享账户</h1>
-        <el-row v-for="item in shares" :key="item.id">
-          <AccountCard :isShare='true' :account='item' @delete='handleDelete' @detail='handelDetail'/>
+        <el-row v-for="item in filterShares" :key="item.id">
+          <AccountCard :isShare='true'
+           :account='item'
+           @delete='handleDelete'
+           @detail='handelDetail'
+           @add='handleAdd'/>
         </el-row>
       </el-col>
     </el-row>
@@ -25,8 +32,9 @@ import AccountCard from '@/components/AccountCard/index.vue'
 export default {
   data () {
     return {
-      person: [{name: '我的账户1', id: '1'}, {name: '我的账户2', id: '2'}, {name: '我的账户3', id: '3'}],
-      shares: [{name: '家庭共享账户', id: '4'}, {name: '寝室共享账户', id: '5'}, {name: '公司共享账户', id: '6'}]
+      person: [],
+      shares: [],
+      accounts: []
     }
   },
   methods: {
@@ -36,25 +44,62 @@ export default {
     handleDelete (accountId) {
       this.$confirm(`确认删除? ${accountId}`, '提示', {})
         .then(() => {
-          console.log(`删除了账户 ${accountId}`)
+          // console.log(`删除了账户 ${accountId}`)
+          this.$ajax.delete('/users/' + accountId)
+            .then(res => {
+              // console.log(res)
+              // 在accounts中删除该数据
+              for (let i = 0; i < this.accounts.length; i++) {
+                if (this.accounts[i].id === accountId) {
+                  this.accounts.splice(i, 1)
+                }
+              }
+            })
+            .catch((err) => {
+              console.log(err)
+            })
         })
-        .catch(() => { })
     },
     /**
-     * 组件触发查看详情
+     * 组件触发查看详情 查看
      */
     handelDetail (accountId) {
       console.log(`查看了账户 ${accountId}`)
+      // this.$ajax.get('/users/'+accountId)
+      // .then(res => {
+      //   this.accountInfo.push(res.data)
+      // })
+      // .catch(err => {
+      //   console.log(err)
+      // })
+    },
+
+    // 为指定账本添加关联用户
+    // id：账本id accountId:关联用户id
+    handleAdd (id, accountId) {
+      // console.log(userId)
+      this.$ajax.post('/users/' + id + '/link', accountId)
+        .then(res => {
+          console.log(res)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+  },
+  computed: {
+    // 获取非共享账户
+    filterPerson () {
+      return this.accounts.filter(account => !account.isShare)
+    },
+    // 获取共享账户
+    filterShares () {
+      return this.accounts.filter(account => account.isShare)
     }
   },
   mounted () {
-    this.$ajax.get(`users`, {
-      params: {
-        accountId: 1
-      }
-    }).then(res => {
-      this.person = res.data.filter(account => account.isShare === false)
-      this.shares = res.data.filter(account => account.isShare === true)
+    this.$ajax.get('/users').then(res => {
+      this.accounts = res.data
     })
   },
   components: {

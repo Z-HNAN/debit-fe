@@ -66,7 +66,7 @@ export default {
         .catch(() => { })
     }
   }
-}
+} 
 </script>
 
 <style scoped>

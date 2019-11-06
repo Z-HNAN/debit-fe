@@ -1,19 +1,11 @@
 <template>
   <div class="main">
-    <h1 style="display: inline-block;margin-right: 10px;">XXX账户</h1>
-    <el-select v-model="value" @change="selAccount" placeholder="请选择你的账户">
-      <el-option
-        v-for="item in options"
-        :key="item.id"
-        :label="item.name"
-        :value="item.id">
-      </el-option>
-    </el-select>
+    <AccountSelect @getAccount="selectAccount"/>
     <div class="chartPreview">
       <el-row>
-        <el-col :span="8"><h3>记账天数</h3></el-col>
-         <el-col :span="8"><h3>预算额度</h3></el-col>
-          <el-col :span="8"><h3>账户余额</h3></el-col>
+        <el-col :span="8"><h3>在线天数</h3></el-col>
+         <el-col :span="8"><h3>使用金额</h3></el-col>
+          <el-col :span="8"><h3>预算金额</h3></el-col>
       </el-row>
       <el-row>
         <el-col :span="8">
@@ -21,18 +13,18 @@
           </div>
         </el-col>
         <el-col :span="8">
-          <div class="box3">{{used}}/{{budget}}&nbsp;元
+          <div class="box3">{{used}}/{{moneyAmount}}&nbsp;元
           </div>
         </el-col>
         <el-col :span="8">
-          <div class="box3">{{rest}}&nbsp;元
+          <div class="box3">{{budget}}&nbsp;元
           </div>
         </el-col>
       </el-row>
     </div>
     <el-row>
       <el-col :span="12">
-        <div id="myChart1" :style="{width: '110%', height: '400px'}"></div>
+        <div id="myChart1" :style="{width: '100%', height: '400px'}"></div>
       </el-col>
       <el-col :span="12">
         <div id="myChart2" :style="{width: '100%', height: '400px'}"></div>
@@ -42,52 +34,34 @@
 
 </template>
 <script>
+import AccountSelect from '@/components/AccountSelect/index.vue'
 export default {
   name: 'IndexContainer',
   data () {
     return {
-      online: null,
+      online: 100,
       used: 900,
-      budget: 2500,
-      rest: null,
-      options: [],
-      value: ''
+      budget: 3000,
+      moneyAmount: 5000
     }
   },
-  created () {
-    this.getAccount()
+  components: {
+    AccountSelect
   },
   mounted () {
     this.drawLine()
+    // 默认显示第一个账户
+    this.$ajax.get('/users').then(res => {
+      this.$ajax.get('/users/' + res.data[0].id).then(res1 => {
+        this.budget = res1.data.moneyAmount
+      })
+      this.$ajax.get('/bills?userId=' + res.data[0].id).then(res2 => {
+        this.getMoneyAmount(res2.data)
+      })
+    })
   },
   methods: {
-    getAccount () { // 获取该用户所有的记账账本
-      this.$ajax.get('/users')
-        .then((response) => {
-          this.options = response.data
-          this.selAccount(this.options[0].id)
-          console.log(response.data)
-        }).catch((error) => {
-          console.log(error)
-        })
-    },
-    selAccount (userId) { // 用户选择账户
-      this.$ajax.get('/users/{' + userId + '}')
-        .then((response) => {
-          this.value = response.data.name
-          this.rest = response.data.moneyAmount // 账户余额
-          this.online = this.getDay(response.data.createDate) // 记账时间
-        }).catch((error) => {
-          console.log(error)
-        })
-      this.drawLine(userId)
-    },
-    getDay (startTime) { // 根据时间戳获取记账天数
-      var endTime = new Date().getTime()
-      var days = Math.floor((endTime - startTime) / 86400000)
-      return days
-    },
-    drawLine (userId) { // echart图表
+    drawLine () {
       // 基于准备好的dom，初始化echarts实例
       let myChart1 = this.$echarts.init(document.getElementById('myChart1'))
       // 绘制图表
@@ -100,6 +74,14 @@ export default {
               color: '#999'
             }
           }
+        },
+        toolbox: {
+          // feature: {
+          //   dataView: {show: true, readOnly: false},
+          //   magicType: {show: true, type: ['line', 'bar']},
+          //   restore: {show: true},
+          //   saveAsImage: {show: true}
+          // }
         },
         legend: {
           data: ['消费金额', '剩余金额', '收入金额']
@@ -152,64 +134,59 @@ export default {
       })
 
       let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
-      // 异步加载数据
-      this.$ajax.get('/users/type/{' + userId + '}').then((response) => {
-        // 绘制图表
-        myChart2.setOption({
-          title: {
-            text: '账目总览',
-            left: 'center',
-            top: 20,
-            textStyle: {
-              color: '#aaa'
-            }
-          },
-          tooltip: {
-            trigger: 'item',
-            formatter: '{a} <br/>{b} : {c} ({d}%)'
-          },
-          series: [{
+      myChart2.setOption({
+        series: [
+          {
             name: '访问来源',
             type: 'pie',
             radius: '55%',
-            center: ['50%', '50%'],
-            data: (function () { // 饼图数据
-              let data = []
-              for (let i = 0; i < response.data.length; i++) {
-                data.push({
-                  'value': response.data[i].amount,
-                  'name': response.data[i].name 
-                })
-              }
-              return data
-            })()
-              .sort(function (a, b) { return a.value - b.value }),
-            roseType: 'radius',
-            label: {
-              normal: {
-                textStyle: {
-                  color: 'rgba(0, 0, 0, 0.8)'
-                }
-              }
-            },
-            labelLine: {
-              normal: {
-                lineStyle: {
-                  color: 'rgba(0, 0, 0, 0.5)'
-                },
-                smooth: 0,
-                length: 10,
-                length2: 20
-              }
-            },
-            animationType: 'scale',
-            animationEasing: 'elasticOut',
-            animationDelay: function (idx) {
-              return Math.random() * 200
-            }
-          }]
-        })
+            data: [
+              {value: 235, name: '交通出行'},
+              {value: 274, name: '服饰美容'},
+              {value: 310, name: '文体教育'},
+              {value: 335, name: '餐饮美食'},
+              {value: 800, name: '生活日用'},
+              {value: 1000, name: '住房物业'}
+            ]
+          }
+        ]
       })
+    },
+    selectAccount (id) {
+      // 获取选中账本moneyAmount
+      this.$ajax.get('/users/' + id)
+        .then(res => {
+          // console.log(res.data)
+          this.budget = res.data.moneyAmount
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      // 获取指定账本下的所有账目明细
+      this.$ajax.get('/bills?userId=' + id)
+        .then(res => {
+          this.getMoneyAmount(res.data)
+        })
+    },
+    getMoneyAmount (bills) {
+      // 计算所有收入账目总额
+      let income = bills.filter(item => {
+        return item.isIncome === true
+      })
+      let allIncome = 0
+      for (let i = 0; i < income.length; i++) {
+        allIncome += income[i].amount
+      }
+      // 计算所有支出账目总额
+      let pay = bills.filter(item => {
+        return item.isIncome === false
+      })
+      let allPay = 0
+      for (let i = 0; i < pay.length; i++) {
+        allPay += pay[i].amount
+      }
+      // 计算账本总金额 = 所有收入 - 所有支出
+      this.moneyAmount = allIncome - allPay
     }
   }
 }

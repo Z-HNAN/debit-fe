@@ -3,21 +3,18 @@
     <h1>创建一个账户</h1>
     <el-form ref="form" :model="form" label-width="80px">
       <el-form-item label="账单名称">
-        <el-input v-model="form.accountName"></el-input>
+        <el-input v-model="form.name"></el-input>
       </el-form-item>
-      <el-form-item label="账户id">
-        <el-input v-model="form.accountId"></el-input>
+      <el-form-item label="用户id">
+        <el-input v-model.number="form.accountId"></el-input>
       </el-form-item>
       <el-form-item label="账户金额">
           <el-input v-model.number="form.moneyAmount"></el-input>
       </el-form-item>
-      <el-form-item label="账户描述">
-        <el-input type="textarea" v-model="form.desc"></el-input>
-      </el-form-item>
       <el-form-item class="myRadio" label="是否共享">
         <el-radio-group v-model="form.isShare">
-          <el-radio label="是"></el-radio>
-          <el-radio label="否"></el-radio>
+          <el-radio label="true">是</el-radio>
+          <el-radio label="false">否</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item>
@@ -33,17 +30,35 @@ export default {
   data () {
     return {
       form: {
-        accountName: '',
+        name: '',
         accountId: '',
         moneyAmount: '',
-        isShare: '',
-        desc: ''
+        isShare: ''
       }
     }
   },
   methods: {
     onSubmit () {
-      console.log('submit!')
+      // 获取当前创建账单的创建时间
+      const createDate = new Date().getTime()
+      this.form.createDate = createDate
+      // console.log(createDate)
+      // console.log(this.form)
+      this.$ajax.post('/users', this.form)
+        .then(res => {
+          // console.log(res.data)
+          this.$alert('创建成功！！！', '提示', {
+            confirmButtonText: 'ok'
+          })
+          // 清空表单中输入的数据
+          this.form.name = ''
+          this.form.accountId = ''
+          this.form.moneyAmount = ''
+          this.form.isShare = ''
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
   }
 }

@@ -1,14 +1,19 @@
 <template>
    <el-table
-      :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+      :data="tableData.slice((currentPage-1) * 8, currentPage * 8)
+      .filter(data => !search || data.month.toLowerCase().includes(search.toLowerCase()))"
       style="width: 80%">
       <el-table-column
         label="月份"
         prop="month">
       </el-table-column>
       <el-table-column
-        label="金额"
-        prop="sum">
+        label="花销金额"
+        prop="paySum">
+      </el-table-column>
+      <el-table-column
+        label="收入金额"
+        prop="incomeSum">
       </el-table-column>
       <el-table-column
         align="right">
@@ -23,7 +28,7 @@
           <el-button
             size="small"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)"><i class="fa fa-trash-o"></i>&nbsp;删除</el-button>
+            @click="handleDelete(scope.$index)"><i class="fa fa-trash-o"></i>&nbsp;删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -32,45 +37,70 @@
 <script>
 export default {
   name: 'monthRecord',
+  props: ['billData', 'currentPage'],
   data () {
     return {
-      tableData: [{
-        month: '2016-05',
-        sum: 2000
-      }, {
-        month: '2016-06',
-        sum: 2000
-      }, {
-        month: '2016-07',
-        sum: 2000
-      }, {
-        month: '2016-08',
-        sum: 2000
-      },
-      {
-        month: '2016-05',
-        sum: 2000
-      },
-      {
-        month: '2016-05',
-        sum: 2000
-      },
-      {
-        month: '2016-05',
-        sum: 2000
-      },
-      {
-        month: '2016-05',
-        sum: 2000
-      }],
+      tableData: [],
+      tableData1: [],
       search: ''
     }
   },
   methods: {
-    handleDelete (index, row) {
-      console.log(index, row)
+    handleDelete (index) {
+      this.tableData.splice(index, 1)
+    },
+    // 将日期按相同年-月划分
+    getYearMonth () {
+      let yearMonth = this.billData.reduce((prev, item) => {
+        let splitDate = item.date.split('-')
+        let date = splitDate[0] + '-' + splitDate[1]
+        if (date in prev) {
+          prev[date].push(item) // 按照相同年月分组
+        } else {
+          prev[date] = [item]
+        }
+        return prev
+      }, {})
+      // console.log(yearMonth)
+      for (var k in yearMonth) {
+        let incomeSum = 0
+        let paySum = 0
+        let obj = {} // 存放month paySum incomeSum
+        yearMonth[k].forEach(item => {
+          if (item.isIncome === true) {
+            incomeSum += item.amount
+          } else {
+            paySum += item.amount
+          }
+        })
+        // console.log(incomeSum, paySum)
+        obj.month = k
+        obj.incomeSum = incomeSum
+        obj.paySum = paySum
+        // console.log(obj)
+        this.tableData.push(obj)
+      }
+      // this.tableData = this.tableData1.slice(0, 8)
     }
+    // 切换页面
+    // handleCurrentChange () {
+    // let start
+    // let end
+    // if (this.val) {
+    // start = (this.val - 1) * 8
+    // end = this.val * 8
+    // this.tableData1.slice(start, end)
+    // } else {
+    // this.tableData1.slice(0, 8)
+    // }
+    // }
+  },
+  mounted () {
+    this.getYearMonth()
   }
+  // updated () {
+  // this.getYearMonth()
+  // }
 }
 </script>
 
