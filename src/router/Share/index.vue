@@ -28,6 +28,7 @@
 
 <script>
 import AccountCard from '@/components/AccountCard/index.vue'
+import getLoginInfo from '@/utils/getLoginInfo.js'
 
 export default {
   data () {
@@ -101,6 +102,10 @@ export default {
     this.$ajax.get('/users').then(res => {
       this.accounts = res.data
     })
+
+    const loginInfo = getLoginInfo()
+    console.log('当前登录用户信息')
+    console.log(loginInfo)
   },
   components: {
     AccountCard
