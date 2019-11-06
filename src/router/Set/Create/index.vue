@@ -13,8 +13,8 @@
       </el-form-item>
       <el-form-item class="myRadio" label="是否共享">
         <el-radio-group v-model="form.isShare">
-          <el-radio label="true">是</el-radio>
-          <el-radio label="false">否</el-radio>
+          <el-radio :label="true">是</el-radio>
+          <el-radio :label="false">否</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item>
