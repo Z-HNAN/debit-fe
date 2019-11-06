@@ -42,14 +42,16 @@ export default {
       online: 100,
       used: 900,
       budget: 3000,
-      moneyAmount: 5000
+      moneyAmount: 5000,
+      rest: null,
+      options: [],
+      value: ''
     }
   },
   components: {
     AccountSelect
   },
   mounted () {
-    this.drawLine()
     // 默认显示第一个账户
     this.$ajax.get('/users').then(res => {
       this.$ajax.get('/users/' + res.data[0].id).then(res1 => {
@@ -61,7 +63,33 @@ export default {
     })
   },
   methods: {
-    drawLine () {
+    getAccount () { // 获取该用户所有的记账账本
+      this.$ajax.get('/users')
+        .then((response) => {
+          this.options = response.data
+          this.selAccount(this.options[0].id)
+          console.log(response.data)
+        }).catch((error) => {
+          console.log(error)
+        })
+    },
+    selAccount (userId) { // 用户选择账户
+      this.$ajax.get('/users/{' + userId + '}')
+        .then((response) => {
+          this.value = response.data.name
+          this.rest = response.data.moneyAmount // 账户余额
+          this.online = this.getDay(response.data.createDate) // 记账时间
+        }).catch((error) => {
+          console.log(error)
+        })
+      this.drawLine(userId)
+    },
+    getDay (startTime) { // 根据时间戳获取记账天数
+      var endTime = new Date().getTime()
+      var days = Math.floor((endTime - startTime) / 86400000)
+      return days
+    },
+    drawLine (userId) { // echart图表
       // 基于准备好的dom，初始化echarts实例
       let myChart1 = this.$echarts.init(document.getElementById('myChart1'))
       // 绘制图表
@@ -187,6 +215,64 @@ export default {
       }
       // 计算账本总金额 = 所有收入 - 所有支出
       this.moneyAmount = allIncome - allPay
+      // 异步加载数据
+      this.$ajax.get('/users/type/{' + userId + '}').then((response) => {
+        // 绘制图表
+        myChart2.setOption({
+          title: {
+            text: '账目总览',
+            left: 'center',
+            top: 20,
+            textStyle: {
+              color: '#aaa'
+            }
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
+          },
+          series: [{
+            name: '访问来源',
+            type: 'pie',
+            radius: '55%',
+            center: ['50%', '50%'],
+            data: (function () { // 饼图数据
+              let data = []
+              for (let i = 0; i < response.data.length; i++) {
+                data.push({
+                  'value': response.data[i].amount,
+                  'name': response.data[i].name
+                })
+              }
+              return data
+            })()
+              .sort(function (a, b) { return a.value - b.value }),
+            roseType: 'radius',
+            label: {
+              normal: {
+                textStyle: {
+                  color: 'rgba(0, 0, 0, 0.8)'
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                lineStyle: {
+                  color: 'rgba(0, 0, 0, 0.5)'
+                },
+                smooth: 0,
+                length: 10,
+                length2: 20
+              }
+            },
+            animationType: 'scale',
+            animationEasing: 'elasticOut',
+            animationDelay: function (idx) {
+              return Math.random() * 200
+            }
+          }]
+        })
+      })
     }
   }
 }
