@@ -3,14 +3,14 @@
     <h1>记一笔帐</h1>
     <el-form ref="form" :model="form" label-width="80px">
       <el-form-item label="添入账本">
-          <el-input v-model.number="form.userId" placeholder="请输入添入账本id"></el-input>
+          <AccountSelect @getAccount="selectAccount"/>
       </el-form-item>
-    <el-form-item label="用户id">
-        <el-input v-model.number="form.accountId" placeholder="请输入你的个人id"></el-input>
-    </el-form-item>
-    <el-form-item label="账目名称">
-        <el-input v-model="form.name" placeholder="请输添加账目名称"></el-input>
-    </el-form-item>
+      <el-form-item label="用户id">
+          <el-input v-model.number="form.accountId" placeholder="请输入你的个人id"></el-input>
+      </el-form-item>
+      <el-form-item label="账目名称">
+          <el-input v-model="form.name" placeholder="请输添加账目名称"></el-input>
+      </el-form-item>
       <el-form-item label="记账类型" class="myRadio">
           <el-col :span="12">
             <el-select v-model="form.type" placeholder="记账类型">
@@ -54,12 +54,12 @@
       <el-form-item label="消费备注">
         <el-input type="textarea" v-model="form.remark"></el-input>
       </el-form-item>
-    <el-form-item class="myRadio" label="消费类型">
-      <el-radio-group v-model="form.isIncome">
-        <el-radio label="false">支出</el-radio>
-        <el-radio label="true">收入</el-radio>
-      </el-radio-group>
-    </el-form-item>
+      <el-form-item class="myRadio" label="消费类型">
+        <el-radio-group v-model="form.isIncome">
+          <el-radio label="false">支出</el-radio>
+          <el-radio label="true">收入</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">立即创建</el-button>
         <el-button>取消</el-button>
@@ -69,6 +69,7 @@
 </template>
 
 <script>
+import AccountSelect from '@/components/AccountSelect/index.vue'
 export default {
   data () {
     return {
@@ -92,7 +93,13 @@ export default {
       formWidth: '120px'
     }
   },
+  components: {
+    AccountSelect
+  },
   methods: {
+    selectAccount (id) {
+      this.form.userId = id
+    },
     onSubmit () {
       // 添加创建账目时间
       this.form.date = new Date().getTime()
