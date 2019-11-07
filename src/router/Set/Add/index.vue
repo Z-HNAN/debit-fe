@@ -5,9 +5,6 @@
       <el-form-item label="添入账本">
           <AccountSelect @getAccount="selectAccount"/>
       </el-form-item>
-      <el-form-item label="用户id">
-          <el-input v-model.number="form.accountId" placeholder="请输入你的个人id"></el-input>
-      </el-form-item>
       <el-form-item label="账目名称">
           <el-input v-model="form.name" placeholder="请输添加账目名称"></el-input>
       </el-form-item>
@@ -70,6 +67,7 @@
 
 <script>
 import AccountSelect from '@/components/AccountSelect/index.vue'
+import getLoginInfo from '@/utils/getLoginInfo.js'
 export default {
   data () {
     return {
@@ -101,6 +99,8 @@ export default {
       this.form.userId = id
     },
     onSubmit () {
+      // 获取用户id
+      this.form.accountId = getLoginInfo().id
       // 添加创建账目时间
       this.form.date = new Date().getTime()
       // console.log(this.form)
@@ -111,13 +111,11 @@ export default {
             confirmButtonText: 'ok'
           })
           // 清空表单中输入的数据
-          this.form.userId = ''
           this.form.amount = ''
           this.form.type = ''
           this.form.isIncome = ''
           this.form.name = ''
           this.form.remark = ''
-          this.form.accountId = ''
         })
         .catch(err => {
           console.log(err)
@@ -161,6 +159,7 @@ export default {
       .catch(err => {
         console.log(err)
       })
+    this.form.accountId = getLoginInfo().id
   }
 }
 </script>
