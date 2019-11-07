@@ -55,7 +55,7 @@ export default {
     // 默认显示第一个账户
     this.$ajax.get('/users').then(res => {
       this.$ajax.get('/users/' + res.data[0].id).then(res1 => {
-        this.budget = res1.data.moneyAmount
+        this.moneyAmount = res1.data.moneyAmount
       })
       this.$ajax.get('/bills?userId=' + res.data[0].id).then(res2 => {
         this.getMoneyAmount(res2.data)
@@ -227,7 +227,7 @@ export default {
       this.$ajax.get('/users/' + id)
         .then(res => {
           // console.log(res.data)
-          this.budget = res.data.moneyAmount
+          this.moneyAmount = res.data.moneyAmount
         })
         .catch(err => {
           console.log(err)
@@ -239,14 +239,6 @@ export default {
         })
     },
     getMoneyAmount (bills) {
-      // 计算所有收入账目总额
-      let income = bills.filter(item => {
-        return item.isIncome === true
-      })
-      let allIncome = 0
-      for (let i = 0; i < income.length; i++) {
-        allIncome += income[i].amount
-      }
       // 计算所有支出账目总额
       let pay = bills.filter(item => {
         return item.isIncome === false
@@ -255,8 +247,10 @@ export default {
       for (let i = 0; i < pay.length; i++) {
         allPay += pay[i].amount
       }
-      // 计算账本总金额 = 所有收入 - 所有支出
-      this.moneyAmount = allIncome - allPay
+      // 已使用金额
+      this.used = allPay
+      // 账本预算金额 = 账户总额 - 所有支出
+      this.budget = this.moneyAmount - allPay
     }
   }
 }
