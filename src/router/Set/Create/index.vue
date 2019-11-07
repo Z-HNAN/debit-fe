@@ -5,9 +5,6 @@
       <el-form-item label="账单名称">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
-      <el-form-item label="用户id">
-        <el-input v-model.number="form.accountId"></el-input>
-      </el-form-item>
       <el-form-item label="账户金额">
           <el-input v-model.number="form.moneyAmount"></el-input>
       </el-form-item>
@@ -26,6 +23,7 @@
 </template>
 
 <script>
+import getLoginInfo from '@/utils/getLoginInfo.js'
 export default {
   data () {
     return {
@@ -42,6 +40,8 @@ export default {
       // 获取当前创建账单的创建时间
       const createDate = new Date().getTime()
       this.form.createDate = createDate
+      // 获取用户id
+      this.form.accountId = getLoginInfo().id
       // console.log(createDate)
       // console.log(this.form)
       this.$ajax.post('/users', this.form)
