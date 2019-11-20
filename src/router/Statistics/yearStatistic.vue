@@ -2,15 +2,16 @@
   <div class="main">
     <el-row><h1>年消费统计</h1></el-row>
     <el-row>
-      <el-select v-model="value" placeholder="请选择" style="margin-bottom: 20px;">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-      </el-select>
+      <el-date-picker
+        v-model="year"
+        type="year"
+        placeholder="选择年份"
+        @change="getYear">
+      </el-date-picker>
       <div id="myChart" style="width: 100%;height: 480px;"></div>
+    </el-row>
+    <el-row>
+      <div id="myChart" style="width: 100%;height: 500px;"></div>
     </el-row>
   </div>
 </template>
@@ -20,109 +21,130 @@ export default {
   name: 'yearStatistic',
   data () {
     return {
-      options: [{
-        value: '选项1',
-        label: '2019年'
-      }, {
-        value: '选项2',
-        label: '2018年'
-      }, {
-        value: '选项3',
-        label: '2017年'
-      }],
-      value: ''
+      year: new Date(Date.parse(new Date().getFullYear())),
+      month: ['month', '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+      income: ['收入', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      expand: ['支出', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      surplus: ['结余', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     }
   },
   mounted () {
     this.drawLine()
   },
   methods: {
-    drawLine () {
-      let myChart = this.$echarts.init(document.getElementById('myChart'))
-      var colors = ['#5793f3', '#d14a61', '#675bba']
-      let option = {
-        color: colors,
+    // 月份时间戳
+    GetTimeStamp () {
+      var startDate = Date.parse(this.year) // 每年1月1日时间戳
+      var MonthStart = [] // 存储月份时间戳
 
-        tooltip: {
-          trigger: 'none',
-          axisPointer: {
-            type: 'cross'
-          }
-        },
-        legend: {
-          data: ['该年收入', '该年支出']
-        },
-        grid: {
-          top: 70,
-          bottom: 50
-        },
-        xAxis: [
-          {
-            type: 'category',
-            axisTick: {
-              alignWithLabel: true
-            },
-            axisLine: {
-              onZero: false,
-              lineStyle: {
-                color: colors[1]
-              }
-            },
-            axisPointer: {
-              label: {
-                formatter: function (params) {
-                  return '降水量  ' + params.value +
-                                      (params.seriesData.length ? '：' + params.seriesData[0].data : '')
-                }
-              }
-            },
-            data: ['2016-1', '2016-2', '2016-3', '2016-4', '2016-5', '2016-6', '2016-7', '2016-8', '2016-9', '2016-10', '2016-11', '2016-12']
-          },
-          {
-            type: 'category',
-            axisTick: {
-              alignWithLabel: true
-            },
-            axisLine: {
-              onZero: false,
-              lineStyle: {
-                color: colors[0]
-              }
-            },
-            axisPointer: {
-              label: {
-                formatter: function (params) {
-                  return '降水量  ' + params.value +
-                                      (params.seriesData.length ? '：' + params.seriesData[0].data : '')
-                }
-              }
-            },
-            data: ['2015-1', '2015-2', '2015-3', '2015-4', '2015-5', '2015-6', '2015-7', '2015-8', '2015-9', '2015-10', '2015-11', '2015-12']
-          }
-        ],
-        yAxis: [
-          {
-            type: 'value'
-          }
-        ],
-        series: [
-          {
-            name: '该年收入',
-            type: 'line',
-            xAxisIndex: 1,
-            smooth: true,
-            data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
-          },
-          {
-            name: '该年支出',
-            type: 'line',
-            smooth: true,
-            data: [3.9, 5.9, 11.1, 18.7, 48.3, 69.2, 231.6, 46.6, 55.4, 18.4, 10.3, 0.7]
-          }
-        ]
+      for (var i = 0; i < 12; i++) {
+        var MonStart = new Date(startDate).setMonth(new Date(startDate).getMonth() + i)
+        MonthStart.push(MonStart)
       }
+      return MonthStart
+    },
+    // 选择年份
+    getYear () {
+      // 开始年份时间戳
+      var startDate = Date.parse(this.year)
+      // 结束年份时间戳
+      var endDate = new Date(startDate).setFullYear(new Date(startDate).getFullYear() + 1)
+      // 更新数据
+      this.drawLine(startDate, endDate)
+    },
+    drawLine (startDate, endDate) {
+      // 月份时间戳
+      var month = this.GetTimeStamp()
+      
+      this.$ajax.get('/bills?startDate=' + startDate + '&endDate=' + endDate).then((response) => {
+        // 年统计清零
+        for (var k = 1; k < 13; k++) {
+          this.income[k] = 0
+          this.expand[k] = 0
+          this.surplus[k] = 0
+        }
+        // 处理每一条账单
+        for (var i = 0; i < response.data.length; i++) {
+          var bill = response.data[i]
+          // 计算每月收入、支出和结余
+          for (var j = 0; j < 11; j++) {
+            if (month[j] <= bill.date && bill.date < month[j + 1]) {
+              if (bill.isIncome) { // 判断是否为收入
+                this.income[j + 1] += bill.amount
+                this.surplus[j + 1] += bill.amount
+              } else {
+                this.expand[j + 1] += bill.amount
+                this.surplus[j + 1] -= bill.amount
+              }
+              break
+            }
+          }
+        }
+        console.log(this.income)
+        console.log(this.expand)
+        console.log(this.surplus)
+        let myChart = this.$echarts.init(document.getElementById('myChart'))
+        let option = {
+          legend: {},
+          tooltip: {
+            trigger: 'axis',
+            showContent: true
+          },
+          dataset: {
+            source: [
+              this.month,
+              this.income,
+              this.expand,
+              this.surplus
+            ]
+          },
+          xAxis: {type: 'category'},
+          yAxis: {gridIndex: 0},
+          grid: {top: '55%'},
+          series: [
+            {type: 'line', smooth: true, seriesLayoutBy: 'row'},
+            {type: 'line', smooth: true, seriesLayoutBy: 'row'},
+            {type: 'line', smooth: true, seriesLayoutBy: 'row'},
+            {
+              type: 'pie',
+              id: 'pie',
+              radius: '30%',
+              center: ['50%', '25%'],
+              label: {
+                formatter: '{b}: {@2019} ({d}%)'
+              },
+              encode: {
+                itemName: 'month',
+                value: '2019',
+                tooltip: '2019'
+              }
+            }
+          ]
+        }
+        myChart.on('updateAxisPointer', function (event) {
+          var xAxisInfo = event.axesInfo[0]
+          if (xAxisInfo) {
+            var dimension = xAxisInfo.value + 1
+            myChart.setOption({
+              series: {
+                id: 'pie',
+                label: {
+                  formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+                },
+                encode: {
+                  value: dimension,
+                  tooltip: dimension
+                }
+              }
+            })
+          }
+        })
 
-      myChart.setOption(option)
+        myChart.setOption(option)
+      }).catch((error) => {
+        console.error(error)
+      })
+      
     }
   }
 }

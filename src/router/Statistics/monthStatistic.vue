@@ -1,23 +1,16 @@
 <template>
   <div class="main">
-    <el-row><h2>月消费统计</h2></el-row>
+    <el-row><h1>月消费统计</h1></el-row>
     <el-row>
-      <el-col :span="12">
-         <h1>每月收入支出情况</h1>
-         <div id="myChart" style="width: 100%;height: 400px;"></div>
-      </el-col>
-      <el-col :span="12" style="padding-left: 20px;padding-top: 10px;">
-        <h1>支出分类统计</h1>
-        <el-select placeholder="请选择月份" v-model="value" style="margin-bottom: 10px;">
-           <el-option
-             v-for="item in options"
-             :key="item.value"
-             :label="item.label"
-             :value="item.value">
-           </el-option>
-         </el-select>
-        <div id="myPieChart" style="width: 100%;height: 340px;"></div>
-      </el-col>
+      <el-date-picker
+        v-model="month"
+        type="month"
+        placeholder="选择月">
+        @click="getMonth"
+      </el-date-picker>
+    </el-row>
+    <el-row>
+      <div id="myChart" style="width: 100%;height: 500px;"></div>
     </el-row>
   </div>
 </template>
@@ -27,178 +20,139 @@ export default {
   name: 'monthStatistic',
   data () {
     return {
-      value: '',
-      options: [{
-        value: '选项1',
-        label: '一月份'
-      }, {
-        value: '选项2',
-        label: '2月份'
-      }, {
-        value: '选项3',
-        label: '3月份'
-      }, {
-        value: '选项4',
-        label: '4月份'
-      }, {
-        value: '选项5',
-        label: '5月份'
-      }, {
-        value: '选项6',
-        label: '6月份'
-      }, {
-        value: '选项7',
-        label: '7月份'
-      }, {
-        value: '选项8',
-        label: '8月份'
-      }, {
-        value: '选项9',
-        label: '9月份'
-      }, {
-        value: '选项10',
-        label: '10月份'
-      }, {
-        value: '选项11',
-        label: '11月份'
-      }, {
-        value: '选项12',
-        label: '12月份'
-      }]
-
+      month: '',
+      cellSize: [80, 80],
+      pieRadius: 30
     }
   },
   mounted () {
     this.drawLine()
   },
   methods: {
-    drawLine (userId) {
-      // 绘制柱状图
-      let myChart = this.$echarts.init(document.getElementById('myChart'))
-      let option = {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { // 坐标轴指示器，坐标轴触发有效
-            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
-          }
-        },
-        legend: {
-          data: ['剩余', '支出', '收入']
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        xAxis: [
-          {
-            type: 'value'
-          }
-        ],
-        yAxis: [
-          {
-            type: 'category',
-            axisTick: {show: false},
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-          }
-        ],
-        series: [
-          {
-            name: '剩余',
-            type: 'bar',
-            label: {
-              normal: {
-                show: true,
-                position: 'inside'
-              }
-            },
-            data: [200, 170, 240, 244, 200, 220, 210]
-          },
-          {
-            name: '收入',
-            type: 'bar',
-            stack: '总量',
-            label: {
-              normal: {
-                show: true
-              }
-            },
-            data: [320, 302, 341, 374, 390, 450, 420]
-          },
-          {
-            name: '支出',
-            type: 'bar',
-            stack: '总量',
-            label: {
-              normal: {
-                show: true,
-                position: 'left'
-              }
-            },
-            data: [-120, -132, -101, -134, -190, -230, -210]
-          }
-        ]
+    getMonth () {
+      this.drawLine()
+    },
+    // 获取日期
+    getVirtulData () {
+      var date = this.$echarts.number.parseDate('2017-02-01')
+      var end = this.$echarts.number.parseDate('2017-03-01')
+      var dayTime = 3600 * 24 * 1000
+      var data = []
+      for (var time = date; time < end; time += dayTime) {
+        data.push([
+          this.$echarts.format.formatTime('yyyy-MM-dd', time),
+          Math.floor(Math.random() * 10000)
+        ])
       }
-      myChart.setOption(option)
-
-      // 绘制饼图
-      let myPieChart = this.$echarts.init(document.getElementById('myPieChart'))
-      // 异步加载数据
-      this.$ajax.get('/users/type/{' + userId + '}').then((response) => {
-        // 绘制图表
-        myPieChart.setOption({
-          tooltip: {
-            trigger: 'item',
-            formatter: '{a} <br/>{b}: {c} ({d}%)'
+      return data
+    },
+    // 获取饼状图
+    getPieSeries (scatterData, chart) {
+      return this.$echarts.util.map(scatterData, (item, index) => {
+        return {
+          id: index + 'pie',
+          type: 'pie',
+          // center: chart.convertToPixel('calendar', item),
+          label: {
+            normal: {
+              formatter: '{c}',
+              position: 'inside'
+            }
           },
-          legend: {
-            orient: 'vertical',
-            x: 'right',
-            data: (function () { // 获取用户账目
-              let name = []
-              for (let i = 0; i < response.data.length; i++) {
-                name.push(response.data[i].name)
-              }
-              return name
-            })()
-          },
-          series: [
-            {
-              name: '用户账目',
-              type: 'pie',
-              radius: ['50%', '70%'],
-              avoidLabelOverlap: false,
-              label: {
-                normal: {
-                  show: false,
-                  position: 'center'
-                },
-                emphasis: {
-                  show: true,
-                  textStyle: {
-                    fontSize: '30',
-                    fontWeight: 'bold'
-                  }
-                }
-              },
-              data: (function () { // 饼图数据
-                let data = []
-                for (let i = 0; i < response.data.length; i++) {
-                  data.push({
-                    'value': response.data[i].amount,
-                    'name': response.data[i].name 
-                  })
-                }
-                return data
-              })()
-            }]
-        })
+          radius: this.pieRadius,
+          data: [
+            {name: '工作', value: Math.round(Math.random() * 24)},
+            {name: '娱乐', value: Math.round(Math.random() * 24)},
+            {name: '睡觉', value: Math.round(Math.random() * 24)}
+          ]
+        }
       })
+    },
+    getPieSeriesUpdate (scatterData, chart) {
+      return this.$echarts.util.map(scatterData, (item, index) => {
+        var center = chart.convertToPixel('calendar', item)
+        return {
+          id: index + 'pie',
+          center: center
+        }
+      })
+    },
+    drawLine () {
+      // 更新饼状图
+      let myChart = this.$echarts.init(document.getElementById('myChart'))
+      let scatterData = this.getVirtulData()
+      let getPieSeries = this.getPieSeries(scatterData, myChart)
+      let option = {
+        legend: {
+          data: ['工作', '娱乐', '睡觉'],
+          bottom: 20
+        },
+        calendar: {
+          top: 'middle',
+          left: 'center',
+          orient: 'vertical',
+          cellSize: this.cellSize,
+          yearLabel: {
+            show: false,
+            textStyle: {
+              fontSize: 30
+            }
+          },
+          dayLabel: {
+            margin: 20,
+            firstDay: 1,
+            nameMap: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+          },
+          monthLabel: {
+            show: false
+          },
+          range: ['2017-02']
+        },
+        series: [{
+          id: 'label',
+          type: 'scatter',
+          coordinateSystem: 'calendar',
+          symbolSize: 1,
+          label: {
+            normal: {
+              show: true,
+              formatter: function (params) {
+                return this.$echarts.format.formatTime('dd', params.value[0]);
+              },
+              offset: [-this.cellSize[0] / 2 + 10, -this.cellSize[1] / 2 + 10],
+              textStyle: {
+                color: '#000',
+                fontSize: 14
+              }
+            }
+            },
+            data: scatterData
+        }]
+      }
+      //myChart.setOption(option)
+      // console.log(myChart)
+
+      if (!app.inNode) {
+        var pieInitialized
+        setTimeout(function () {
+          pieInitialized = true;
+          myChart.setOption({
+            series: getPieSeries
+          })
+        }, 10)
+
+        app.onresize = function () {
+          if (pieInitialized) {
+            myChart.setOption({
+              series: getPieSeriesUpdate(scatterData, myChart)
+            })
+          }
+        }
+      }
     }
   }
 }
 </script>
 
-<style >
+<style>
 </style>

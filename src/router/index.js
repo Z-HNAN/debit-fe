@@ -98,9 +98,8 @@ export default new Router({
     name: 'Statistics',
     path: '/statistics',
     component: Statistics,
-    redirect: '/statistic/month',
+    redirect: '/statistic/day',
     children: [{
-
       name: 'Statistic.Day',
       path: '/statistic/day',
       component: StatisticDay
