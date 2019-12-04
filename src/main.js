@@ -45,7 +45,7 @@ Vue.prototype.$ajax = Axios // vue中使用
 /* 引入echarts */
 Vue.prototype.$echarts = echarts
 
-Axios.defaults.baseURL = 'http://94.191.90.221:50533/api'
+Axios.defaults.baseURL = process.env.BASE_URL
 
 /* Axios携带cookie */
 Axios.defaults.withCredentials = true
