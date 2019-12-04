@@ -5,8 +5,8 @@
       <el-date-picker
         v-model="year"
         type="year"
-        placeholder="选择年份"
-        @change="getYear">
+        placeholder="选择时间段"
+        @change="getPeriod">
       </el-date-picker>
       <div id="myChart" style="width: 100%;height: 480px;"></div>
     </el-row>
@@ -44,7 +44,7 @@ export default {
       return MonthStart
     },
     // 选择年份
-    getYear () {
+    getPeriod () {
       // 开始年份时间戳
       var startDate = Date.parse(this.year)
       // 结束年份时间戳
@@ -80,9 +80,6 @@ export default {
             }
           }
         }
-        console.log(this.income)
-        console.log(this.expand)
-        console.log(this.surplus)
         let myChart = this.$echarts.init(document.getElementById('myChart'))
         let option = {
           legend: {},
@@ -139,12 +136,10 @@ export default {
             })
           }
         })
-
         myChart.setOption(option)
       }).catch((error) => {
         console.error(error)
       })
-      
     }
   }
 }

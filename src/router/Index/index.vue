@@ -31,11 +31,8 @@
       </el-row>
     </div>
     <el-row>
-      <el-col :span="12">
+      <el-col :span="20">
         <div id="myChart1" :style="{width: '110%', height: '400px'}"></div>
-      </el-col>
-      <el-col :span="12">
-        <div id="myChart2" :style="{width: '100%', height: '400px'}"></div>
       </el-col>
     </el-row>
   </div>
@@ -51,14 +48,15 @@ export default {
       budget: 2500,
       rest: null,
       options: [],
-      value: ''
+      value: '',
+      year: new Date(Date.parse(new Date().getFullYear())),
+      income: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      expand: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      surplus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     }
   },
-  created () {
-    this.getAccount()
-  },
   mounted () {
-    this.drawLine()
+    this.getAccount()
   },
   methods: {
     getAccount () { // 获取该用户所有的记账账本
@@ -77,137 +75,116 @@ export default {
           this.value = response.data.name
           this.rest = response.data.moneyAmount // 账户余额
           this.online = this.getDay(response.data.createDate) // 记账时间
+          console.log(response.data.createDate)
+          this.drawLine(response.data.createDate, new Date().getTime())
         }).catch((error) => {
-          console.log(error)
+          console.error(error)
         })
-      this.drawLine(userId)
     },
     getDay (startTime) { // 根据时间戳获取记账天数
       var endTime = new Date().getTime()
       var days = Math.floor((endTime - startTime) / 86400000)
       return days
     },
-    drawLine (userId) { // echart图表
-      // 基于准备好的dom，初始化echarts实例
-      let myChart1 = this.$echarts.init(document.getElementById('myChart1'))
-      // 绘制图表
-      myChart1.setOption({
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross',
-            crossStyle: {
-              color: '#999'
-            }
-          }
-        },
-        legend: {
-          data: ['消费金额', '剩余金额', '收入金额']
-        },
-        xAxis: [
-          {
-            type: 'category',
-            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-            axisPointer: {
-              type: 'shadow'
-            }
-          }
-        ],
-        yAxis: [
-          {
-            type: 'value',
-            name: '消费金额',
+    // 月份时间戳
+    GetTimeStamp (year) {
+      var startDate = Date.parse(year) // 每年1月1日时间戳
+      var MonthStart = [] // 存储月份时间戳
 
-            axisLabel: {
-              formatter: '{value} 元'
-            }
-          },
-          {
-            type: 'value',
-            name: '剩余金额',
-
-            axisLabel: {
-              formatter: '{value} 元'
+      for (var i = 0; i < 12; i++) {
+        var MonStart = new Date(startDate).setMonth(new Date(startDate).getMonth() + i)
+        MonthStart.push(MonStart)
+      }
+      return MonthStart
+    },
+    drawLine (startDate, endDate) { // echart图表
+      // 月份时间戳
+      var month = this.GetTimeStamp(this.year)
+      
+      this.$ajax.get('/bills?startDate=' + startDate + '&endDate=' + endDate).then((response) => {
+        // 不同账本统计清零
+        for (var k = 1; k < 13; k++) {
+          this.income[k] = 0
+          this.expand[k] = 0
+          this.surplus[k] = 0
+        }
+        
+        // 处理每一条账单
+        for (var i = 0; i < response.data.length; i++) {
+          var bill = response.data[i]
+          // 计算每月收入、支出和结余
+          for (var j = 0; j < 11; j++) {
+            if (month[j] <= bill.date && bill.date < month[j + 1]) {
+              if (bill.isIncome) { // 判断是否为收入
+                this.income[j + 1] += bill.amount
+                this.surplus[j + 1] += bill.amount
+              } else {
+                this.expand[j + 1] -= bill.amount
+                this.surplus[j + 1] -= bill.amount
+              }
+              break
             }
           }
-        ],
-        series: [
-          {
-            name: '消费金额',
-            type: 'bar',
-            data: [500, 600, 700, 800, 800, 1000, 888, 788, 900, 777, 666, 555]
-          },
-          {
-            name: '剩余金额',
-            type: 'bar',
-            data: [1000, 2000, 3000, 2500, 3000, 3100, 4000, 3500, 5000, 2800, 3000, 3800]
-          },
-          {
-            name: '收入金额',
-            type: 'line',
-            yAxisIndex: 1,
-            data: [2000, 3000, 4000, 3000, 3500, 4500, 5000, 4000, 6000, 3444, 4444, 5000]
-          }
-        ]
-      })
-
-      let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
-      // 异步加载数据
-      this.$ajax.get('/users/type/{' + userId + '}').then((response) => {
+        }
+        // 基于准备好的dom，初始化echarts实例
+        let myChart1 = this.$echarts.init(document.getElementById('myChart1'))
         // 绘制图表
-        myChart2.setOption({
-          title: {
-            text: '账目总览',
-            left: 'center',
-            top: 20,
-            textStyle: {
-              color: '#aaa'
-            }
-          },
+        myChart1.setOption({
           tooltip: {
-            trigger: 'item',
-            formatter: '{a} <br/>{b} : {c} ({d}%)'
-          },
-          series: [{
-            name: '访问来源',
-            type: 'pie',
-            radius: '55%',
-            center: ['50%', '50%'],
-            data: (function () { // 饼图数据
-              let data = []
-              for (let i = 0; i < response.data.length; i++) {
-                data.push({
-                  'value': response.data[i].amount,
-                  'name': response.data[i].name 
-                })
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              crossStyle: {
+                color: '#999'
               }
-              return data
-            })()
-              .sort(function (a, b) { return a.value - b.value }),
-            roseType: 'radius',
-            label: {
-              normal: {
-                textStyle: {
-                  color: 'rgba(0, 0, 0, 0.8)'
-                }
-              }
-            },
-            labelLine: {
-              normal: {
-                lineStyle: {
-                  color: 'rgba(0, 0, 0, 0.5)'
-                },
-                smooth: 0,
-                length: 10,
-                length2: 20
-              }
-            },
-            animationType: 'scale',
-            animationEasing: 'elasticOut',
-            animationDelay: function (idx) {
-              return Math.random() * 200
             }
-          }]
+          },
+          legend: {
+            data: ['消费金额', '剩余金额', '收入金额']
+          },
+          xAxis: [
+            {
+              type: 'category',
+              data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+              axisPointer: {
+                type: 'shadow'
+              }
+            }
+          ],
+          yAxis: [
+            {
+              type: 'value',
+              name: '消费金额',
+              axisLabel: {
+                formatter: '{value} 元'
+              }
+            },
+            {
+              type: 'value',
+              name: '剩余金额',
+              axisLabel: {
+                formatter: '{value} 元'
+              }
+            }
+          ],
+          series: [
+            {
+              name: '消费金额',
+              type: 'bar',
+              data: this.expand
+            },
+            {
+              name: '剩余金额',
+              type: 'line',
+              yAxisIndex: 1,
+              data: this.surplus
+            },
+            {
+              name: '收入金额',
+              type: 'bar',
+              data: this.income
+            }
+          ]
         })
       })
     }

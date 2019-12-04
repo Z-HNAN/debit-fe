@@ -4,9 +4,11 @@
     <el-row>
       <el-date-picker
         v-model="month"
-        type="month"
-        placeholder="选择月">
-        @click="getMonth"
+        type="monthrange"
+        range-separator="至"
+        start-placeholder="开始月份"
+        end-placeholder="结束月份"
+        @change="getMonthPeriod">
       </el-date-picker>
     </el-row>
     <el-row>
@@ -20,135 +22,89 @@ export default {
   name: 'monthStatistic',
   data () {
     return {
-      month: '',
-      cellSize: [80, 80],
-      pieRadius: 30
+      month: [new Date().setMonth(new Date().getMonth() - 1), new Date()],
+      lineData: [
+        {value: 0},
+        {value: 0},
+        {value: 0}
+      ]
     }
   },
   mounted () {
-    this.drawLine()
+    this.drawLine(this.month[0], this.month[1])
   },
   methods: {
-    getMonth () {
-      this.drawLine()
+    // 获取月份时间戳
+    getTimeStamp (month) {
+      return Date.parse(month)
     },
-    // 获取日期
-    getVirtulData () {
-      var date = this.$echarts.number.parseDate('2017-02-01')
-      var end = this.$echarts.number.parseDate('2017-03-01')
-      var dayTime = 3600 * 24 * 1000
-      var data = []
-      for (var time = date; time < end; time += dayTime) {
-        data.push([
-          this.$echarts.format.formatTime('yyyy-MM-dd', time),
-          Math.floor(Math.random() * 10000)
-        ])
-      }
-      return data
+    // 触发选择月份事件
+    getMonthPeriod () {
+      var startMonth = this.getTimeStamp(this.month[0])
+      var endMonth = this.getTimeStamp(this.month[1])
+      this.drawLine(startMonth, endMonth)
     },
-    // 获取饼状图
-    getPieSeries (scatterData, chart) {
-      return this.$echarts.util.map(scatterData, (item, index) => {
-        return {
-          id: index + 'pie',
-          type: 'pie',
-          // center: chart.convertToPixel('calendar', item),
-          label: {
-            normal: {
-              formatter: '{c}',
-              position: 'inside'
-            }
-          },
-          radius: this.pieRadius,
-          data: [
-            {name: '工作', value: Math.round(Math.random() * 24)},
-            {name: '娱乐', value: Math.round(Math.random() * 24)},
-            {name: '睡觉', value: Math.round(Math.random() * 24)}
-          ]
-        }
-      })
-    },
-    getPieSeriesUpdate (scatterData, chart) {
-      return this.$echarts.util.map(scatterData, (item, index) => {
-        var center = chart.convertToPixel('calendar', item)
-        return {
-          id: index + 'pie',
-          center: center
-        }
-      })
-    },
-    drawLine () {
-      // 更新饼状图
-      let myChart = this.$echarts.init(document.getElementById('myChart'))
-      let scatterData = this.getVirtulData()
-      let getPieSeries = this.getPieSeries(scatterData, myChart)
-      let option = {
-        legend: {
-          data: ['工作', '娱乐', '睡觉'],
-          bottom: 20
-        },
-        calendar: {
-          top: 'middle',
-          left: 'center',
-          orient: 'vertical',
-          cellSize: this.cellSize,
-          yearLabel: {
-            show: false,
-            textStyle: {
-              fontSize: 30
-            }
-          },
-          dayLabel: {
-            margin: 20,
-            firstDay: 1,
-            nameMap: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
-          },
-          monthLabel: {
-            show: false
-          },
-          range: ['2017-02']
-        },
-        series: [{
-          id: 'label',
-          type: 'scatter',
-          coordinateSystem: 'calendar',
-          symbolSize: 1,
-          label: {
-            normal: {
-              show: true,
-              formatter: function (params) {
-                return this.$echarts.format.formatTime('dd', params.value[0]);
-              },
-              offset: [-this.cellSize[0] / 2 + 10, -this.cellSize[1] / 2 + 10],
-              textStyle: {
-                color: '#000',
-                fontSize: 14
-              }
-            }
-            },
-            data: scatterData
-        }]
-      }
-      //myChart.setOption(option)
-      // console.log(myChart)
-
-      if (!app.inNode) {
-        var pieInitialized
-        setTimeout(function () {
-          pieInitialized = true;
-          myChart.setOption({
-            series: getPieSeries
-          })
-        }, 10)
-
-        app.onresize = function () {
-          if (pieInitialized) {
-            myChart.setOption({
-              series: getPieSeriesUpdate(scatterData, myChart)
-            })
+    drawLine (startMonth, endMonth) {
+      this.$ajax.get('/bills?startMonth=' + startMonth + '&endMonth=' + endMonth).then((response) => {
+        // 对账单类型进行分类
+        var bills = response.data
+        for (var i = 0; i < bills.length; i++) {
+          if (bills[i].isIncome) { // 收入汇总
+            this.lineData[0].value += bills[i].amount
+            this.lineData[2].value += bills[i].amount
+          } else { // 支出汇总
+            this.lineData[1].value += bills[i].amount
+            this.lineData[2].value -= bills[i].amount
           }
         }
-      }
+      
+        // 更新饼状图
+        let myChart = this.$echarts.init(document.getElementById('myChart'))
+        myChart.setOption({
+          title: {
+            text: '账户金额汇总'
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: { // 坐标轴指示器，坐标轴触发有效
+              type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+            }
+          },
+          grid: {
+            top: 80,
+            bottom: 30
+          },
+          xAxis: {
+            type: 'value',
+            position: 'top',
+            splitLine: {lineStyle: {type: 'dashed'}}
+          },
+          yAxis: {
+            type: 'category',
+            axisLine: {show: true},
+            axisLabel: {show: false},
+            axisTick: {show: false},
+            splitLine: {show: true},
+            data: ['支出', '收入', '结余']
+          },
+          series: [
+            {
+              name: '生活费',
+              type: 'bar',
+              stack: '总量',
+              label: {
+                normal: {
+                  show: true,
+                  formatter: '{b}'
+                }
+              },
+              data: this.lineData
+            }
+          ]
+        })
+      }).catch((error) => {
+        console.error(error)
+      })
     }
   }
 }

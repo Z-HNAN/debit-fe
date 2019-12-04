@@ -13,7 +13,7 @@
     </el-row>
     <el-row>
       <el-col :span="14">
-         <h1>收/支条目</h1>
+         <h1>收/支条目明细</h1>
           <el-table
             :data="tableData"
             stripe
@@ -48,7 +48,7 @@
           </el-table>
       </el-col>
       <el-col :span="10" style="padding-left: 20px;padding-top: 10px;">
-        <h1>收/支占比</h1>
+        <h1>账目占比</h1>
         <div id="myPieChart" style="width: 100%;height: 340px;"></div>
       </el-col>
     </el-row>
@@ -99,38 +99,15 @@ export default {
         myPieChart.setOption({
           tooltip: {
             trigger: 'item',
-            formatter: '{a} <br/>{b}: {c} ({d}%)'
-          },
-          legend: {
-            orient: 'vertical',
-            x: 'left',
-            data: (function () { // 获取用户账目
-              let name = []
-              for (let i = 0; i < response.data.length; i++) {
-                name.push(response.data[i].name)
-              }
-              return name
-            })()
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
           },
           series: [
             {
-              name: '用户账目',
+              name: '账目信息',
               type: 'pie',
-              radius: ['50%', '70%'],
-              avoidLabelOverlap: false,
-              label: {
-                normal: {
-                  show: false,
-                  position: 'center'
-                },
-                emphasis: {
-                  show: true,
-                  textStyle: {
-                    fontSize: '30',
-                    fontWeight: 'bold'
-                  }
-                }
-              },
+              radius: [30, 110],
+              center: ['50%', '50%'],
+              roseType: 'area',
               data: (function () { // 饼图数据
                 let data = []
                 for (let i = 0; i < response.data.length; i++) {
@@ -141,10 +118,11 @@ export default {
                 }
                 return data
               })()
-            }]
+            }
+          ]
         })
       }).catch((error) => {
-        console.log(error)
+        console.error(error)
       })
     }
   }
