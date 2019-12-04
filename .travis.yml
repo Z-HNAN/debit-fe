@@ -8,7 +8,7 @@ before_install:
   - npm install
 
 script:
-  - npm run demo
+  - npm run build
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker build -t zhnan/debit-fe:1.1.0-demo .
-  - docker push zhnan/debit-fe:1.1.0-demo
+  - docker build -t zhnan/debit-fe:1.1.0 .
+  - docker push zhnan/debit-fe:1.1.0
