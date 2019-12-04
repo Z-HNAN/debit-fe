@@ -24,10 +24,8 @@
                     prefix-icon="el-icon-key"
                 ></el-input>
             </el-form-item>
-            <el-checkbox
-                v-model="checked"
-                class="rememberme"
-            >记住密码</el-checkbox>
+            <el-checkbox v-model="checked" class="rememberme">记住密码</el-checkbox>
+            <el-link @click="register">立即注册</el-link>
             <el-form-item style="width:100%;">
                 <el-button type="primary" plain style="width:100%;" @click="handleSubmit" :loading="logining">登录</el-button>
             </el-form-item>
@@ -67,6 +65,9 @@ export default {
         }).catch(err => {
           console.log(err)
         })
+    },
+    register () {
+      this.$router.push({path: '/register'})
     }
   }
 }
@@ -90,5 +91,8 @@ export default {
 label.el-checkbox.rememberme {
     margin: 0px 0px 15px;
     text-align: left;
+}
+.el-link {
+  margin-left: 200px;
 }
 </style>
