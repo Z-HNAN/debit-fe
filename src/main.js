@@ -67,12 +67,13 @@ Axios.interceptors.response.use(function (config) {
 
 Vue.config.productionTip = false
 
+// 用户未登录则自动跳转到登录页面
 router.beforeEach((to, from, next) => {
   if (to.path === '/login') {
     sessionStorage.removeItem('user')
   }
   var user = sessionStorage.getItem('user')
-  if (!user && to.path !== '/login') {
+  if (!user && to.path !== '/login' && to.path !== '/register') {
     next({
       path: '/login'
     })
