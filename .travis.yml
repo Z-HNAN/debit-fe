@@ -10,5 +10,5 @@
   script:
     - npm run demo
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker build -t zhnan/debit-fe:demo .
-    - docker push zhnan/debit-fe:demo
+    - docker build -t zhnan/debit-fe:1.0.1-demo .
+    - docker push zhnan/debit-fe:1.0.1-demo
