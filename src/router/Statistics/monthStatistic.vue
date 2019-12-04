@@ -2,22 +2,17 @@
   <div class="main">
     <el-row><h1>月消费统计</h1></el-row>
     <el-row>
-      <el-col :span="12">
-         <h1>每月收入支出情况</h1>
-         <div id="myChart" style="width: 100%;height: 400px;"></div>
-      </el-col>
-      <el-col :span="12" style="padding-left: 20px;padding-top: 10px;">
-        <h1>支出分类统计</h1>
-        <el-select placeholder="请选择月份" v-model="value" style="margin-bottom: 10px;">
-           <el-option
-             v-for="item in options"
-             :key="item.value"
-             :label="item.label"
-             :value="item.value">
-           </el-option>
-         </el-select>
-        <div id="myPieChart" style="width: 100%;height: 340px;"></div>
-      </el-col>
+      <el-date-picker
+        v-model="month"
+        type="monthrange"
+        range-separator="至"
+        start-placeholder="开始月份"
+        end-placeholder="结束月份"
+        @change="getMonthPeriod">
+      </el-date-picker>
+    </el-row>
+    <el-row>
+      <div id="myChart" style="width: 100%;height: 500px;"></div>
     </el-row>
   </div>
 </template>
@@ -27,178 +22,93 @@ export default {
   name: 'monthStatistic',
   data () {
     return {
-      value: '',
-      options: [{
-        value: '选项1',
-        label: '一月份'
-      }, {
-        value: '选项2',
-        label: '2月份'
-      }, {
-        value: '选项3',
-        label: '3月份'
-      }, {
-        value: '选项4',
-        label: '4月份'
-      }, {
-        value: '选项5',
-        label: '5月份'
-      }, {
-        value: '选项6',
-        label: '6月份'
-      }, {
-        value: '选项7',
-        label: '7月份'
-      }, {
-        value: '选项8',
-        label: '8月份'
-      }, {
-        value: '选项9',
-        label: '9月份'
-      }, {
-        value: '选项10',
-        label: '10月份'
-      }, {
-        value: '选项11',
-        label: '11月份'
-      }, {
-        value: '选项12',
-        label: '12月份'
-      }]
-
+      month: [new Date().setMonth(new Date().getMonth() - 1), new Date()],
+      lineData: [
+        {value: 0},
+        {value: 0},
+        {value: 0}
+      ]
     }
   },
   mounted () {
-    this.drawLine()
+    this.drawLine(this.month[0], this.month[1])
   },
   methods: {
-    drawLine (userId) {
-      // 绘制柱状图
-      let myChart = this.$echarts.init(document.getElementById('myChart'))
-      let option = {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { // 坐标轴指示器，坐标轴触发有效
-            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+    // 获取月份时间戳
+    getTimeStamp (month) {
+      return Date.parse(month)
+    },
+    // 触发选择月份事件
+    getMonthPeriod () {
+      var startMonth = this.getTimeStamp(this.month[0])
+      var endMonth = this.getTimeStamp(this.month[1])
+      this.drawLine(startMonth, endMonth)
+    },
+    drawLine (startMonth, endMonth) {
+      this.$ajax.get('/bills?startMonth=' + startMonth + '&endMonth=' + endMonth).then((response) => {
+        // 对账单类型进行分类
+        var bills = response.data
+        for (var i = 0; i < bills.length; i++) {
+          if (bills[i].isIncome) { // 收入汇总
+            this.lineData[0].value += bills[i].amount
+            this.lineData[2].value += bills[i].amount
+          } else { // 支出汇总
+            this.lineData[1].value += bills[i].amount
+            this.lineData[2].value -= bills[i].amount
           }
-        },
-        legend: {
-          data: ['剩余', '支出', '收入']
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        xAxis: [
-          {
-            type: 'value'
-          }
-        ],
-        yAxis: [
-          {
-            type: 'category',
-            axisTick: {show: false},
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-          }
-        ],
-        series: [
-          {
-            name: '剩余',
-            type: 'bar',
-            label: {
-              normal: {
-                show: true,
-                position: 'inside'
-              }
-            },
-            data: [200, 170, 240, 244, 200, 220, 210]
+        }
+      
+        // 更新饼状图
+        let myChart = this.$echarts.init(document.getElementById('myChart'))
+        myChart.setOption({
+          title: {
+            text: '账户金额汇总'
           },
-          {
-            name: '收入',
-            type: 'bar',
-            stack: '总量',
-            label: {
-              normal: {
-                show: true
-              }
-            },
-            data: [320, 302, 341, 374, 390, 450, 420]
-          },
-          {
-            name: '支出',
-            type: 'bar',
-            stack: '总量',
-            label: {
-              normal: {
-                show: true,
-                position: 'left'
-              }
-            },
-            data: [-120, -132, -101, -134, -190, -230, -210]
-          }
-        ]
-      }
-      myChart.setOption(option)
-
-      // 绘制饼图
-      let myPieChart = this.$echarts.init(document.getElementById('myPieChart'))
-      // 异步加载数据
-      this.$ajax.get('/users/type/{' + userId + '}').then((response) => {
-        // 绘制图表
-        myPieChart.setOption({
           tooltip: {
-            trigger: 'item',
-            formatter: '{a} <br/>{b}: {c} ({d}%)'
+            trigger: 'axis',
+            axisPointer: { // 坐标轴指示器，坐标轴触发有效
+              type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+            }
           },
-          legend: {
-            orient: 'vertical',
-            x: 'right',
-            data: (function () { // 获取用户账目
-              let name = []
-              for (let i = 0; i < response.data.length; i++) {
-                name.push(response.data[i].name)
-              }
-              return name
-            })()
+          grid: {
+            top: 80,
+            bottom: 30
+          },
+          xAxis: {
+            type: 'value',
+            position: 'top',
+            splitLine: {lineStyle: {type: 'dashed'}}
+          },
+          yAxis: {
+            type: 'category',
+            axisLine: {show: true},
+            axisLabel: {show: false},
+            axisTick: {show: false},
+            splitLine: {show: true},
+            data: ['支出', '收入', '结余']
           },
           series: [
             {
-              name: '用户账目',
-              type: 'pie',
-              radius: ['50%', '70%'],
-              avoidLabelOverlap: false,
+              name: '生活费',
+              type: 'bar',
+              stack: '总量',
               label: {
                 normal: {
-                  show: false,
-                  position: 'center'
-                },
-                emphasis: {
                   show: true,
-                  textStyle: {
-                    fontSize: '30',
-                    fontWeight: 'bold'
-                  }
+                  formatter: '{b}'
                 }
               },
-              data: (function () { // 饼图数据
-                let data = []
-                for (let i = 0; i < response.data.length; i++) {
-                  data.push({
-                    'value': response.data[i].amount,
-                    'name': response.data[i].name 
-                  })
-                }
-                return data
-              })()
-            }]
+              data: this.lineData
+            }
+          ]
         })
+      }).catch((error) => {
+        console.error(error)
       })
     }
   }
 }
 </script>
 
-<style >
+<style>
 </style>
