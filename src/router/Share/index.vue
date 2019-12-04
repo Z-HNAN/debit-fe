@@ -28,6 +28,7 @@
 
 <script>
 import AccountCard from '@/components/AccountCard/index.vue'
+import getLoginInfo from '@/utils/getLoginInfo.js'
 
 export default {
   data () {
@@ -76,15 +77,21 @@ export default {
 
     // 为指定账本添加关联用户
     // id：账本id accountId:关联用户id
-    handleAdd (id, accountId) {
-      // console.log(userId)
-      this.$ajax.post('/users/' + id + '/link', accountId)
-        .then(res => {
-          console.log(res)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+    handleAdd (id, nickName) {
+      let user = null
+      // console.log(nickName)
+      this.$ajax.get(`/accounts?nickName=${nickName}`)
+      .then(res => {
+        [user] = res.data
+        // console.log(user.id)
+        return this.$ajax.post(`/users/${id}/link?accountId=${user.id}`)
+      })
+      .then(res => {
+        this.$alert(`添加成功 用户名:${user.username}, 用户昵称:${user.nickName}`, '提示')
+      })
+      .catch(err => {
+        this.$alert('添加失败/该用户已经添加过了', '提示')
+      })
     }
   },
   computed: {
@@ -101,6 +108,10 @@ export default {
     this.$ajax.get('/users').then(res => {
       this.accounts = res.data
     })
+
+    const loginInfo = getLoginInfo()
+    console.log('当前登录用户信息')
+    console.log(loginInfo)
   },
   components: {
     AccountCard

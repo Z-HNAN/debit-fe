@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <el-row><h2>月消费统计</h2></el-row>
+    <el-row><h1>月消费统计</h1></el-row>
     <el-row>
       <el-col :span="12">
          <h1>每月收入支出情况</h1>

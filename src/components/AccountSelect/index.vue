@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 style="display: inline-block;margin-right: 10px;">{{value || defaultValue}}</h3>
+    <h3 v-show="show" style="display: inline-block;margin-right: 10px;">{{value || defaultValue}}</h3>
     <el-select v-model="value" placeholder="请选择你的账户" @change="getAccount">
       <el-option
         v-for="item in options"
@@ -18,7 +18,8 @@ export default {
     return {
       options: [],
       value: '',
-      defaultValue: ''
+      defaultValue: '',
+      show: true
     }
   },
   methods: {
@@ -32,6 +33,9 @@ export default {
       // console.log(id)
       this.$emit('getAccount', id)
     }
+  },
+  mounted () {
+    this.show = window.location.hash.substr(2) !== 'set/add'
   },
   beforeCreate () {
     this.$ajax.get('/users')

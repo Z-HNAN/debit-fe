@@ -13,8 +13,8 @@
         <el-button style="margin-right: 10px;" type="primary" @click="dialogFormVisible = true">添加</el-button>
         <el-dialog title="账户关联" :visible.sync="dialogFormVisible" width="450px">
           <el-form :model="form">
-            <el-form-item label="关联用户id" :label-width="formLabelWidth">
-              <el-input v-model.number="form.accountId" autocomplete="off"></el-input>
+            <el-form-item label="关联用户名称" :label-width="formLabelWidth">
+              <el-input v-model="form.nickName" autocomplete="off"></el-input>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -49,7 +49,7 @@ export default {
   data () {
     return {
       form: {
-        accountId: ''
+        nickName: ''
       },
       dialogFormVisible: false,
       ulVisible: false,
@@ -75,7 +75,7 @@ export default {
 
     // 为一个账户添加关联人员
     handleAdd () {
-      this.$emit('add', this.account.id, this.form.accountId)
+      this.$emit('add', this.account.id, this.form.nickName)
       // console.log(this.form.userId)
       this.dialogFormVisible = false
     },
